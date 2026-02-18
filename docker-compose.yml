@@ -1,41 +1,71 @@
 version: '3.9'
 
 services:
-  db:
+  crm-db:
     image: postgres:16-alpine
-    container_name: dubkin_crm_db
+    container_name: dubkin-crm-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB:       ${DB_NAME:-dubkin_crm}
-      POSTGRES_USER:     ${DB_USER:-crm_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+      POSTGRES_DB: dubkin_crm
+      POSTGRES_USER: crm_user
+      POSTGRES_PASSWORD: changeme
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
-    ports:
-      - "5432:5432"
+      - pgdata:/var/lib/postgresql/data
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    networks:
+      - crm-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-crm_user} -d ${DB_NAME:-dubkin_crm}"]
+      test: ["CMD-SHELL", "pg_isready -U crm_user -d dubkin_crm"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  api:
-    build: .
-    container_name: dubkin_crm_api
+  crm-api:
+    image: node:20-alpine
+    container_name: dubkin-crm-api
     restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
+    working_dir: /app
+    command: sh -c "npm install && npm start"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/frontend
     environment:
-      PORT:        ${PORT:-3000}
-      DB_HOST:     db
-      DB_PORT:     5432
-      DB_NAME:     ${DB_NAME:-dubkin_crm}
-      DB_USER:     ${DB_USER:-crm_user}
-      DB_PASSWORD: ${DB_PASSWORD:-changeme}
+      DB_HOST: crm-db
+      DB_PORT: 5432
+      DB_NAME: dubkin_crm
+      DB_USER: crm_user
+      DB_PASSWORD: changeme
+      PORT: 3001
+      NODE_ENV: production
     ports:
-      - "${PORT:-3000}:3000"
+      - "3001:3001"
+    depends_on:
+      crm-db:
+        condition: service_healthy
+    networks:
+      - crm-net
+
+  crm-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://crm-api:3001
+    container_name: dubkin-crm-frontend
+    restart: unless-stopped
+    environment:
+      NEXT_PUBLIC_API_URL: http://crm-api:3001
+    ports:
+      - "3000:3000"
+    depends_on:
+      - crm-api
+    networks:
+      - crm-net
 
 volumes:
-  postgres_data:
+  pgdata:
+
+networks:
+  crm-net:
+    driver: bridge
