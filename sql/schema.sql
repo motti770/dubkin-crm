@@ -109,3 +109,19 @@ CREATE INDEX IF NOT EXISTS idx_deals_stage       ON deals(stage_id);
 CREATE INDEX IF NOT EXISTS idx_deals_contact     ON deals(contact_id);
 CREATE INDEX IF NOT EXISTS idx_activities_deal   ON activities(deal_id);
 CREATE INDEX IF NOT EXISTS idx_activities_contact ON activities(contact_id);
+
+-- Follow-ups (the heart of the CRM!)
+CREATE TABLE IF NOT EXISTS follow_ups (
+  id          SERIAL PRIMARY KEY,
+  deal_id     INTEGER REFERENCES deals(id) ON DELETE CASCADE,
+  contact_id  INTEGER REFERENCES contacts(id) ON DELETE SET NULL,
+  due_date    TIMESTAMP NOT NULL,
+  type        VARCHAR(50) CHECK (type IN ('call','whatsapp','email','meeting','other')),
+  notes       TEXT,
+  status      VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending','done','snoozed')),
+  created_at  TIMESTAMP DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_follow_ups_status   ON follow_ups(status);
+CREATE INDEX IF NOT EXISTS idx_follow_ups_due_date ON follow_ups(due_date);
+CREATE INDEX IF NOT EXISTS idx_follow_ups_deal     ON follow_ups(deal_id);

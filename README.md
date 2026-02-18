@@ -119,6 +119,29 @@ GET /health
 
 סוגי פעולות: `call`, `email`, `whatsapp`, `meeting`, `note`, `other`
 
+### Follow-ups ❤️ (לב ה-CRM)
+
+| Method | Path | תיאור |
+|--------|------|-------|
+| GET    | `/follow-ups` | כל ה-follow-ups (תומך: `?status=pending`, `?deal_id=`, `?contact_id=`) |
+| POST   | `/follow-ups` | יצירת follow-up חדש |
+| PATCH  | `/follow-ups/:id/done` | סימון כבוצע ✅ |
+| PATCH  | `/follow-ups/:id/snooze` | דחייה לתאריך אחר 💤 |
+
+**POST /follow-ups body:**
+```json
+{
+  "deal_id": 1,
+  "contact_id": 1,
+  "due_date": "2026-02-22T10:00:00",
+  "type": "whatsapp",
+  "notes": "לשאול אם קיבל את הצעת המחיר"
+}
+```
+
+סוגי follow-up: `call`, `whatsapp`, `email`, `meeting`, `other`
+סטטוסים: `pending`, `done`, `snoozed`
+
 ### Pipeline
 
 ```

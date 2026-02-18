@@ -9,6 +9,7 @@ const contactsRouter   = require('./routes/contacts');
 const dealsRouter      = require('./routes/deals');
 const activitiesRouter = require('./routes/activities');
 const pipelineRouter   = require('./routes/pipeline');
+const followUpsRouter  = require('./routes/follow-ups');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -28,7 +29,8 @@ app.get('/health', (_req, res) => {
 app.use('/contacts',   contactsRouter);
 app.use('/deals',      dealsRouter);
 app.use('/activities', activitiesRouter);
-app.use('/pipeline',   pipelineRouter);
+app.use('/pipeline',    pipelineRouter);
+app.use('/follow-ups', followUpsRouter);
 
 // 404
 app.use((_req, res) => {
