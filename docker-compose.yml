@@ -11,7 +11,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
+      - ./backend/sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql:ro
     ports:
       - "5432:5432"
     healthcheck:
@@ -21,7 +21,7 @@ services:
       retries: 5
 
   api:
-    build: .
+    build: ./backend
     container_name: dubkin_crm_api
     restart: unless-stopped
     depends_on:
@@ -36,6 +36,19 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-changeme}
     ports:
       - "${PORT:-3000}:3000"
+
+  frontend:
+    build: ./frontend
+    container_name: dubkin_crm_frontend
+    restart: unless-stopped
+    depends_on:
+      - api
+    environment:
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
+    ports:
+      - "${FRONTEND_PORT:-3001}:3001"
+    profiles:
+      - frontend
 
 volumes:
   postgres_data:
