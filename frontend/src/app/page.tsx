@@ -85,6 +85,22 @@ export default function DashboardPage() {
         ))}
       </div>
 
+      {/* Quick actions */}
+      <div className="flex gap-3">
+        <Link href="/deals"
+          className="flex items-center gap-2 px-4 py-3 rounded-xl border backdrop-blur-sm text-sm font-semibold bg-blue-500/20 border-blue-400/30 text-blue-300">
+          <Plus size={16} /> עסקה חדשה
+        </Link>
+        <Link href="/contacts"
+          className="flex items-center gap-2 px-4 py-3 rounded-xl border backdrop-blur-sm text-sm font-semibold bg-purple-500/20 border-purple-400/30 text-purple-300">
+          <User size={16} /> איש קשר
+        </Link>
+        <Link href="/pipeline"
+          className="flex items-center gap-2 px-4 py-3 rounded-xl border backdrop-blur-sm text-sm font-semibold bg-emerald-500/20 border-emerald-400/30 text-emerald-300">
+          <LayoutDashboard size={16} /> לוח קנבן
+        </Link>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
 
         {/* Pipeline breakdown */}
@@ -115,9 +131,9 @@ export default function DashboardPage() {
                       </div>
                       <span className="text-xs font-semibold text-white/70">{formatCurrency(value)}</span>
                     </div>
-                    <div className="h-1.5 bg-white/06 rounded-full overflow-hidden">
+                    <div className="h-2.5 bg-white/06 rounded-full overflow-hidden">
                       <div
-                        className={`h-full ${colors.bar} rounded-full transition-all duration-700 opacity-70`}
+                        className={`h-full ${colors.bar} rounded-full transition-all duration-1000 opacity-70`}
                         style={{ width: `${(count / maxCount) * 100}%` }}
                       />
                     </div>
@@ -179,7 +195,7 @@ export default function DashboardPage() {
               const colors = STAGE_COLORS[deal.stage] || STAGE_COLORS['ארכיון'];
               return (
                 <div key={deal.id}
-                  className="flex items-center justify-between p-3 rounded-xl bg-white/04 hover:bg-white/07 transition-colors">
+                  className={`flex items-center justify-between p-3 rounded-xl bg-white/04 hover:bg-white/07 transition-colors border-r-2 ${colors.bar.replace('bg-', 'border-')}`}>
                   <div className="flex items-center gap-3">
                     <span className={`inline-flex px-2 py-0.5 rounded-full text-[10px] font-semibold border ${colors.badge}`}>
                       {deal.stage}

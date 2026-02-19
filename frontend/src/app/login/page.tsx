@@ -3,6 +3,7 @@
 import { useState, FormEvent, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
+import { User, Lock } from 'lucide-react';
 
 export default function LoginPage() {
   const router = useRouter();

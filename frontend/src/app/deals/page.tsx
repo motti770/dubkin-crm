@@ -4,20 +4,6 @@ import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { dealsApi, activitiesApi, contactsApi, Deal, Activity } from '@/lib/api';
 import { formatCurrency, formatDate, formatDateTime, cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-} from '@/components/ui/dialog';
 import {
   Plus,
   ChevronLeft,
@@ -28,36 +14,63 @@ import {
   CheckSquare,
   FileText,
   Handshake,
+  X,
+  Send,
 } from 'lucide-react';
 
 const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
 
-const STAGE_COLORS: Record<string, string> = {
-  'צינון': 'secondary',
-  'אפיון': 'info',
-  'מחירה': 'warning',
-  'סגירה': 'warning',
-  'לקוח פעיל': 'success',
-  'ארכיון': 'outline',
+const STAGE_PILL: Record<string, string> = {
+  'צינון':      'bg-slate-500/20 text-slate-300 border-slate-500/30',
+  'אפיון':      'bg-blue-500/20 text-blue-300 border-blue-500/30',
+  'מחירה':      'bg-amber-500/20 text-amber-300 border-amber-500/30',
+  'סגירה':      'bg-purple-500/20 text-purple-300 border-purple-500/30',
+  'לקוח פעיל': 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+  'ארכיון':     'bg-gray-600/20 text-gray-400 border-gray-600/30',
 };
 
 const ACTIVITY_TYPES = [
-  { value: 'call', label: 'שיחה', icon: Phone },
-  { value: 'email', label: 'אימייל', icon: Mail },
-  { value: 'meeting', label: 'פגישה', icon: Handshake },
-  { value: 'note', label: 'הערה', icon: FileText },
-  { value: 'task', label: 'משימה', icon: CheckSquare },
+  { value: 'call', label: 'שיחה', icon: Phone, emoji: '📞' },
+  { value: 'email', label: 'אימייל', icon: Mail, emoji: '📧' },
+  { value: 'meeting', label: 'פגישה', icon: Handshake, emoji: '🤝' },
+  { value: 'note', label: 'הערה', icon: FileText, emoji: '📝' },
+  { value: 'task', label: 'משימה', icon: CheckSquare, emoji: '✅' },
 ];
 
-const ACTIVITY_ICONS: Record<string, any> = {
-  call: Phone,
-  email: Mail,
-  meeting: Handshake,
-  note: FileText,
-  task: CheckSquare,
-  message: MessageSquare,
+const ACTIVITY_EMOJIS: Record<string, string> = {
+  call: '📞', email: '📧', meeting: '🤝', note: '📝', task: '✅', message: '💬',
 };
 
+/* ───── Glass Dialog ───── */
+function GlassDialog({
+  open,
+  onClose,
+  title,
+  children,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}) {
+  if (!open) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+      <div className="relative w-full max-w-md bg-[rgba(10,20,50,0.95)] backdrop-blur-xl border border-white/10 rounded-2xl p-6 shadow-2xl space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-black text-white">{title}</h2>
+          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-colors">
+            <X size={16} />
+          </button>
+        </div>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ───── Add Deal Dialog ───── */
 function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState({
@@ -91,54 +104,55 @@ function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
   });
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button size="sm" className="gap-2">
-          <Plus size={16} />
-          עסקה חדשה
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>הוספת עסקה</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
-          <div className="space-y-1">
-            <Label>שם עסקה *</Label>
-            <Input
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="flex items-center gap-2 px-4 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all hover:shadow-blue-400/30"
+      >
+        <Plus size={16} />
+        עסקה חדשה
+      </button>
+
+      <GlassDialog open={open} onClose={() => setOpen(false)} title="הוספת עסקה">
+        <div className="space-y-4">
+          <div className="space-y-1.5">
+            <label className="text-xs text-white/50">שם עסקה *</label>
+            <input
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               placeholder="תיאור העסקה"
+              className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-1">
-              <Label>שלב</Label>
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/50">שלב</label>
               <select
                 value={form.stage}
                 onChange={e => setForm(f => ({ ...f, stage: e.target.value }))}
-                className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+                className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors"
               >
                 {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
-            <div className="space-y-1">
-              <Label>שווי (₪)</Label>
-              <Input
+            <div className="space-y-1.5">
+              <label className="text-xs text-white/50">שווי (₪)</label>
+              <input
                 type="number"
                 value={form.value}
                 onChange={e => setForm(f => ({ ...f, value: e.target.value }))}
                 placeholder="0"
                 dir="ltr"
+                className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
               />
             </div>
           </div>
-          <div className="space-y-1">
-            <Label>איש קשר</Label>
+          <div className="space-y-1.5">
+            <label className="text-xs text-white/50">איש קשר</label>
             <select
               value={form.contact_id}
               onChange={e => setForm(f => ({ ...f, contact_id: e.target.value }))}
-              className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
+              className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors"
             >
               <option value="">ללא איש קשר</option>
               {contacts.map(c => (
@@ -146,32 +160,41 @@ function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
               ))}
             </select>
           </div>
-          <div className="space-y-1">
-            <Label>הערות</Label>
-            <Textarea
+          <div className="space-y-1.5">
+            <label className="text-xs text-white/50">הערות</label>
+            <textarea
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
               placeholder="פרטים נוספים..."
               rows={3}
+              className="w-full rounded-xl bg-white/6 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors resize-none"
             />
           </div>
         </div>
-        <DialogFooter>
-          <Button
+        <div className="flex justify-end gap-2 pt-2">
+          <button
+            onClick={() => setOpen(false)}
+            className="px-4 py-2 rounded-xl text-sm text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          >
+            ביטול
+          </button>
+          <button
             onClick={() => mutation.mutate(form)}
             disabled={!form.title || mutation.isPending}
+            className="px-5 py-2 rounded-xl bg-blue-500 hover:bg-blue-400 text-white text-sm font-bold shadow-lg shadow-blue-500/25 transition-all disabled:opacity-40 disabled:cursor-not-allowed"
           >
             {mutation.isPending ? 'שומר...' : 'הוסף'}
-          </Button>
-        </DialogFooter>
+          </button>
+        </div>
         {mutation.isError && (
-          <p className="text-sm text-destructive">{(mutation.error as Error).message}</p>
+          <p className="text-sm text-red-400">{(mutation.error as Error).message}</p>
         )}
-      </DialogContent>
-    </Dialog>
+      </GlassDialog>
+    </>
   );
 }
 
+/* ───── Deal Detail Panel ───── */
 function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
   const qc = useQueryClient();
   const [activityForm, setActivityForm] = useState({ type: 'note', description: '' });
@@ -206,165 +229,160 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
   const activities = activitiesData?.data || [];
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="relative z-10 p-5 space-y-5 max-w-3xl mx-auto">
+      {/* Back + Title */}
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
-          className="p-2 rounded-lg hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+          className="p-2 rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-colors"
         >
           <ChevronLeft size={18} />
         </button>
-        <div>
-          <h1 className="text-xl font-bold">{deal.title}</h1>
+        <div className="flex-1">
+          <h1 className="text-xl font-black text-white">{deal.title}</h1>
           {deal.contact_name && (
-            <p className="text-sm text-muted-foreground">{deal.contact_name}</p>
+            <p className="text-sm text-white/50">{deal.contact_name}</p>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Deal Info */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">פרטי עסקה</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {deal.value && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">שווי</p>
-                <p className="text-xl font-bold text-emerald-400">{formatCurrency(deal.value)}</p>
-              </div>
-            )}
-            <div>
-              <p className="text-xs text-muted-foreground mb-2">שלב נוכחי</p>
-              <Badge variant={STAGE_COLORS[deal.stage] as any}>{deal.stage}</Badge>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-2">שנה שלב</p>
-              <div className="flex flex-wrap gap-1">
-                {STAGES.filter(s => s !== deal.stage).map(stage => (
-                  <button
-                    key={stage}
-                    onClick={() => stageMutation.mutate(stage)}
-                    disabled={stageMutation.isPending}
-                    className="text-xs px-2 py-1 rounded border border-border hover:bg-secondary transition-colors"
-                  >
-                    {stage}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-xs text-muted-foreground mb-1">תאריך יצירה</p>
-              <p className="text-sm">{formatDate(deal.created_at)}</p>
-            </div>
-            {deal.notes && (
-              <div>
-                <p className="text-xs text-muted-foreground mb-1">הערות</p>
-                <p className="text-sm whitespace-pre-wrap">{deal.notes}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+      {/* Deal Info Card */}
+      <div className="glass rounded-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <span className={cn('text-xs px-3 py-1 rounded-full border', STAGE_PILL[deal.stage] || STAGE_PILL['ארכיון'])}>
+            {deal.stage}
+          </span>
+          {deal.value != null && (
+            <span className="text-2xl font-black text-emerald-300">{formatCurrency(deal.value)}</span>
+          )}
+        </div>
 
-        {/* Activities */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base">לוג פעילות</CardTitle>
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => setAddingActivity(!addingActivity)}
-                className="gap-1"
+        {/* Change Stage */}
+        <div>
+          <p className="text-xs text-white/40 mb-2">שנה שלב</p>
+          <div className="flex flex-wrap gap-1.5">
+            {STAGES.filter(s => s !== deal.stage).map(stage => (
+              <button
+                key={stage}
+                onClick={() => stageMutation.mutate(stage)}
+                disabled={stageMutation.isPending}
+                className={cn(
+                  'text-xs px-3 py-1.5 rounded-full border transition-all',
+                  STAGE_PILL[stage] || STAGE_PILL['ארכיון'],
+                  'hover:brightness-125 disabled:opacity-40'
+                )}
               >
-                <Plus size={14} />
-                הוסף
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* Add activity form */}
-            {addingActivity && (
-              <div className="border border-border rounded-lg p-4 space-y-3 bg-secondary/20">
-                <div className="flex gap-2">
-                  {ACTIVITY_TYPES.map(({ value, label, icon: Icon }) => (
-                    <button
-                      key={value}
-                      onClick={() => setActivityForm(f => ({ ...f, type: value }))}
-                      className={cn(
-                        'flex items-center gap-1 text-xs px-2 py-1.5 rounded border transition-colors',
-                        activityForm.type === value
-                          ? 'border-primary bg-primary/20 text-primary'
-                          : 'border-border text-muted-foreground hover:bg-secondary'
-                      )}
-                    >
-                      <Icon size={12} />
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                <Textarea
-                  value={activityForm.description}
-                  onChange={e => setActivityForm(f => ({ ...f, description: e.target.value }))}
-                  placeholder="תיאור הפעילות..."
-                  rows={2}
-                />
-                <div className="flex justify-end gap-2">
-                  <Button size="sm" variant="ghost" onClick={() => setAddingActivity(false)}>
-                    ביטול
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => activityMutation.mutate()}
-                    disabled={!activityForm.description || activityMutation.isPending}
-                  >
-                    {activityMutation.isPending ? 'שומר...' : 'שמור'}
-                  </Button>
-                </div>
-              </div>
-            )}
+                {stage}
+              </button>
+            ))}
+          </div>
+        </div>
 
-            {/* Activity timeline */}
-            {actLoading ? (
-              <div className="space-y-3">
-                {[1,2,3].map(i => <div key={i} className="h-14 rounded bg-muted/30 animate-pulse" />)}
-              </div>
-            ) : activities.length === 0 ? (
-              <div className="text-center py-8">
-                <MessageSquare size={32} className="mx-auto text-muted-foreground/30 mb-2" />
-                <p className="text-sm text-muted-foreground">אין פעילות עדיין</p>
-              </div>
-            ) : (
-              <div className="relative">
-                <div className="absolute right-3.5 top-0 bottom-0 w-px bg-border" />
-                <div className="space-y-4">
-                  {activities.map(activity => {
-                    const Icon = ACTIVITY_ICONS[activity.type] || FileText;
-                    return (
-                      <div key={activity.id} className="flex gap-4 relative">
-                        <div className="w-7 h-7 rounded-full bg-secondary border border-border flex items-center justify-center shrink-0 z-10">
-                          <Icon size={13} className="text-muted-foreground" />
-                        </div>
-                        <div className="flex-1 min-w-0 pt-0.5">
-                          <p className="text-sm">{activity.description}</p>
-                          <p className="text-xs text-muted-foreground mt-0.5">
-                            {formatDateTime(activity.created_at)}
-                          </p>
-                        </div>
-                      </div>
-                    );
-                  })}
+        <div className="flex items-center gap-6 text-xs text-white/40">
+          <span>נוצר {formatDate(deal.created_at)}</span>
+        </div>
+
+        {deal.notes && (
+          <div>
+            <p className="text-xs text-white/40 mb-1">הערות</p>
+            <p className="text-sm text-white/70 whitespace-pre-wrap">{deal.notes}</p>
+          </div>
+        )}
+      </div>
+
+      {/* Activities Section */}
+      <div className="glass rounded-2xl p-5 space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-bold text-white">לוג פעילות</h2>
+          <button
+            onClick={() => setAddingActivity(!addingActivity)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/20 text-blue-300 text-xs font-medium hover:bg-blue-500/30 border border-blue-500/20 transition-colors"
+          >
+            <Plus size={13} />
+            הוסף
+          </button>
+        </div>
+
+        {/* Add activity form */}
+        {addingActivity && (
+          <div className="bg-[rgba(255,255,255,0.04)] rounded-xl p-4 space-y-3 border border-white/5">
+            <div className="flex gap-2 flex-wrap">
+              {ACTIVITY_TYPES.map(({ value, label, emoji }) => (
+                <button
+                  key={value}
+                  onClick={() => setActivityForm(f => ({ ...f, type: value }))}
+                  className={cn(
+                    'flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all',
+                    activityForm.type === value
+                      ? 'border-blue-500/40 bg-blue-500/20 text-blue-300'
+                      : 'border-white/10 text-white/50 hover:bg-white/10'
+                  )}
+                >
+                  <span>{emoji}</span>
+                  {label}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={activityForm.description}
+                onChange={e => setActivityForm(f => ({ ...f, description: e.target.value }))}
+                placeholder="תיאור הפעילות..."
+                className="flex-1 h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
+                onKeyDown={e => {
+                  if (e.key === 'Enter' && activityForm.description) activityMutation.mutate();
+                }}
+              />
+              <button
+                onClick={() => activityMutation.mutate()}
+                disabled={!activityForm.description || activityMutation.isPending}
+                className="px-4 h-10 rounded-xl bg-blue-500 hover:bg-blue-400 text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-blue-500/20"
+              >
+                <Send size={15} />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Activity Timeline */}
+        {actLoading ? (
+          <div className="space-y-3">
+            {[1,2,3].map(i => (
+              <div key={i} className="h-14 rounded-xl bg-white/4 animate-pulse" />
+            ))}
+          </div>
+        ) : activities.length === 0 ? (
+          <div className="text-center py-10">
+            <MessageSquare size={32} className="mx-auto text-white/10 mb-2" />
+            <p className="text-sm text-white/30">אין פעילות עדיין</p>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {activities.map(activity => {
+              const emoji = ACTIVITY_EMOJIS[activity.type] || '📝';
+              return (
+                <div
+                  key={activity.id}
+                  className="flex items-start gap-3 bg-[rgba(255,255,255,0.04)] rounded-xl p-3 hover:bg-white/[0.06] transition-colors"
+                >
+                  <span className="text-lg mt-0.5">{emoji}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm text-white/80">{activity.description}</p>
+                    <p className="text-xs text-white/30 mt-0.5">
+                      {formatDateTime(activity.created_at)}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
     </div>
   );
 }
 
+/* ───── Main Page ───── */
 export default function DealsPage() {
   const [selectedDeal, setSelectedDeal] = useState<Deal | null>(null);
   const [stageFilter, setStageFilter] = useState<string>('');
@@ -374,23 +392,34 @@ export default function DealsPage() {
     queryFn: dealsApi.list,
   });
 
-  const deals = (data?.data || []).filter(d =>
-    stageFilter ? d.stage === stageFilter : true
-  );
+  const allDeals = data?.data || [];
+  const deals = allDeals.filter(d => stageFilter ? d.stage === stageFilter : true);
+
+  const totalPipeline = allDeals
+    .filter(d => d.stage !== 'ארכיון')
+    .reduce((sum, d) => sum + (d.value || 0), 0);
 
   if (selectedDeal) {
-    const currentDeal = data?.data?.find(d => d.id === selectedDeal.id) || selectedDeal;
+    const currentDeal = allDeals.find(d => d.id === selectedDeal.id) || selectedDeal;
     return <DealDetail deal={currentDeal} onBack={() => setSelectedDeal(null)} />;
   }
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="relative z-10 p-5 space-y-5 max-w-5xl mx-auto">
+
+      {/* Header */}
+      <div className="flex items-center justify-between pt-2">
         <div>
-          <h1 className="text-2xl font-bold">עסקאות</h1>
-          <p className="text-muted-foreground text-sm mt-1">{data?.total ?? 0} עסקאות במערכת</p>
+          <h1 className="text-2xl font-black text-white">עסקאות</h1>
+          <p className="text-blue-300/50 text-xs mt-1">{data?.total ?? 0} עסקאות במערכת</p>
         </div>
         <AddDealDialog onSuccess={() => {}} />
+      </div>
+
+      {/* Summary Bar */}
+      <div className="glass rounded-2xl p-4 flex items-center justify-between">
+        <span className="text-xs text-white/50">סה״כ פייפליין</span>
+        <span className="text-xl font-black text-emerald-300">{formatCurrency(totalPipeline)}</span>
       </div>
 
       {/* Stage filter */}
@@ -398,21 +427,25 @@ export default function DealsPage() {
         <button
           onClick={() => setStageFilter('')}
           className={cn(
-            'text-xs px-3 py-1.5 rounded-full border transition-colors',
-            !stageFilter ? 'border-primary bg-primary/20 text-primary' : 'border-border text-muted-foreground hover:bg-secondary'
+            'text-xs px-3 py-1.5 rounded-full border transition-all',
+            !stageFilter
+              ? 'border-blue-500/40 bg-blue-500/20 text-blue-300'
+              : 'border-white/10 text-white/40 hover:bg-white/10'
           )}
         >
           הכל
         </button>
         {STAGES.map(stage => {
-          const count = (data?.data || []).filter(d => d.stage === stage).length;
+          const count = allDeals.filter(d => d.stage === stage).length;
           return (
             <button
               key={stage}
               onClick={() => setStageFilter(stage === stageFilter ? '' : stage)}
               className={cn(
-                'text-xs px-3 py-1.5 rounded-full border transition-colors',
-                stageFilter === stage ? 'border-primary bg-primary/20 text-primary' : 'border-border text-muted-foreground hover:bg-secondary'
+                'text-xs px-3 py-1.5 rounded-full border transition-all',
+                stageFilter === stage
+                  ? STAGE_PILL[stage]
+                  : 'border-white/10 text-white/40 hover:bg-white/10'
               )}
             >
               {stage} {count > 0 && <span className="opacity-60">({count})</span>}
@@ -424,42 +457,41 @@ export default function DealsPage() {
       {/* Deals list */}
       {isLoading ? (
         <div className="space-y-3">
-          {[1,2,3,4].map(i => <div key={i} className="h-20 rounded-xl bg-card border border-border animate-pulse" />)}
+          {[1,2,3,4].map(i => (
+            <div key={i} className="h-20 rounded-2xl bg-white/[0.03] border border-white/5 animate-pulse" />
+          ))}
         </div>
       ) : deals.length === 0 ? (
         <div className="text-center py-16">
-          <Handshake size={48} className="mx-auto text-muted-foreground/30 mb-3" />
-          <p className="text-muted-foreground">אין עסקאות</p>
+          <Handshake size={48} className="mx-auto text-white/10 mb-3" />
+          <p className="text-white/30">אין עסקאות</p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-2">
           {deals.map(deal => (
             <div
               key={deal.id}
               onClick={() => setSelectedDeal(deal)}
-              className="flex items-center justify-between p-4 rounded-xl bg-card border border-border hover:border-primary/40 hover:bg-card/80 transition-all cursor-pointer"
+              className="flex items-center justify-between bg-[rgba(255,255,255,0.06)] border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all cursor-pointer group"
             >
-              <div className="flex items-center gap-4">
-                <Badge variant={STAGE_COLORS[deal.stage] as any} className="shrink-0">
+              <div className="flex items-center gap-3">
+                <span className={cn('text-[11px] px-2.5 py-1 rounded-full border whitespace-nowrap', STAGE_PILL[deal.stage] || STAGE_PILL['ארכיון'])}>
                   {deal.stage}
-                </Badge>
+                </span>
                 <div>
-                  <p className="text-sm font-medium">{deal.title}</p>
+                  <p className="text-sm font-bold text-white">{deal.title}</p>
                   {deal.contact_name && (
-                    <p className="text-xs text-muted-foreground">{deal.contact_name}</p>
+                    <p className="text-xs text-white/50">{deal.contact_name}</p>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 {deal.value ? (
-                  <span className="text-sm font-semibold text-emerald-400">
+                  <span className="text-sm font-black text-emerald-300">
                     {formatCurrency(deal.value)}
                   </span>
                 ) : null}
-                <span className="text-xs text-muted-foreground hidden sm:block">
-                  {formatDate(deal.created_at)}
-                </span>
-                <ChevronLeft size={16} className="text-muted-foreground" />
+                <ChevronLeft size={16} className="text-white/30 group-hover:text-white/60 transition-colors" />
               </div>
             </div>
           ))}
