@@ -91,7 +91,9 @@ export interface Activity {
   contact_name?: string;
   type: string;
   description: string;
+  completed?: boolean;
   created_at: string;
+  occurred_at?: string;
 }
 
 export interface PipelineStage {
@@ -135,4 +137,9 @@ export const activitiesApi = {
     ),
   create: (data: { deal_id?: number; contact_id?: number; type: string; description: string }) =>
     fetchApi<Activity>('/activities', { method: 'POST', body: JSON.stringify(data) }),
+  completeTask: (id: number, completed: boolean) =>
+    fetchApi<Activity>(`/activities/${id}/complete`, {
+      method: 'PATCH',
+      body: JSON.stringify({ completed }),
+    }),
 };

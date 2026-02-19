@@ -45,7 +45,7 @@ router.get('/', async (req, res) => {
 router.post('/', async (req, res) => {
   try {
     const { deal_id, contact_id, type, description, occurred_at } = req.body;
-    const validTypes = ['call', 'email', 'whatsapp', 'meeting', 'note', 'other'];
+    const validTypes = ['call', 'email', 'whatsapp', 'meeting', 'note', 'task', 'other'];
     if (!type || !validTypes.includes(type)) {
       return res.status(400).json({ error: `type must be one of: ${validTypes.join(', ')}` });
     }
@@ -56,6 +56,24 @@ router.post('/', async (req, res) => {
       [deal_id, contact_id, type, description, occurred_at || new Date()]
     );
     res.status(201).json(rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PATCH /activities/:id/complete — toggle task completion
+router.patch('/:id/complete', async (req, res) => {
+  try {
+    const { completed } = req.body;
+    if (typeof completed !== 'boolean') {
+      return res.status(400).json({ error: 'completed must be a boolean' });
+    }
+    const { rows } = await db.query(
+      `UPDATE activities SET completed=$1 WHERE id=$2 AND type='task' RETURNING *`,
+      [completed, req.params.id]
+    );
+    if (!rows.length) return res.status(404).json({ error: 'Task not found' });
+    res.json(rows[0]);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

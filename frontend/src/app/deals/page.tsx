@@ -199,6 +199,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
   const qc = useQueryClient();
   const [activityForm, setActivityForm] = useState({ type: 'note', description: '' });
   const [addingActivity, setAddingActivity] = useState(false);
+  const [activityError, setActivityError] = useState('');
 
   const { data: activitiesData, isLoading: actLoading } = useQuery({
     queryKey: ['activities', deal.id],
@@ -223,6 +224,18 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
       qc.invalidateQueries({ queryKey: ['activities', deal.id] });
       setActivityForm({ type: 'note', description: '' });
       setAddingActivity(false);
+      setActivityError('');
+    },
+    onError: (err: Error) => {
+      setActivityError(err.message || 'שגיאה בשמירה');
+    },
+  });
+
+  const completeMutation = useMutation({
+    mutationFn: ({ id, completed }: { id: number; completed: boolean }) =>
+      activitiesApi.completeTask(id, completed),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['activities', deal.id] });
     },
   });
 
@@ -327,7 +340,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
               <input
                 value={activityForm.description}
                 onChange={e => setActivityForm(f => ({ ...f, description: e.target.value }))}
-                placeholder="תיאור הפעילות..."
+                placeholder={activityForm.type === 'task' ? 'תיאור המשימה...' : 'תיאור הפעילות...'}
                 className="flex-1 h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
                 onKeyDown={e => {
                   if (e.key === 'Enter' && activityForm.description) activityMutation.mutate();
@@ -341,6 +354,9 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
                 <Send size={15} />
               </button>
             </div>
+            {activityError && (
+              <p className="text-sm text-red-400 mt-1">{activityError}</p>
+            )}
           </div>
         )}
 
@@ -360,14 +376,41 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
           <div className="space-y-2">
             {activities.map(activity => {
               const emoji = ACTIVITY_EMOJIS[activity.type] || '📝';
+              const isTask = activity.type === 'task';
+              const isDone = activity.completed;
               return (
                 <div
                   key={activity.id}
-                  className="flex items-start gap-3 bg-[rgba(255,255,255,0.04)] rounded-xl p-3 hover:bg-white/[0.06] transition-colors"
+                  className={cn(
+                    'flex items-start gap-3 rounded-xl p-3 transition-colors',
+                    isTask && isDone
+                      ? 'bg-emerald-500/10 border border-emerald-500/20'
+                      : 'bg-[rgba(255,255,255,0.04)] hover:bg-white/[0.06]'
+                  )}
                 >
-                  <span className="text-lg mt-0.5">{emoji}</span>
+                  {isTask ? (
+                    <button
+                      onClick={() => completeMutation.mutate({ id: activity.id, completed: !isDone })}
+                      disabled={completeMutation.isPending}
+                      className={cn(
+                        'mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all',
+                        isDone
+                          ? 'bg-emerald-500 border-emerald-500 text-white'
+                          : 'border-white/30 hover:border-blue-400'
+                      )}
+                    >
+                      {isDone && <span className="text-xs font-bold">✓</span>}
+                    </button>
+                  ) : (
+                    <span className="text-lg mt-0.5 shrink-0">{emoji}</span>
+                  )}
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm text-white/80">{activity.description}</p>
+                    <p className={cn(
+                      'text-sm',
+                      isTask && isDone ? 'line-through text-white/40' : 'text-white/80'
+                    )}>
+                      {activity.description}
+                    </p>
                     <p className="text-xs text-white/30 mt-0.5">
                       {formatDateTime(activity.created_at)}
                     </p>
