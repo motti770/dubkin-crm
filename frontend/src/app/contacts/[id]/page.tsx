@@ -28,9 +28,9 @@ function getActivityTypeColor(type: string): string {
 
 function getStageBadge(stage: string): string {
   const badges: Record<string, string> = {
-    'צינון': 'text-red-600 bg-red-50',
+    'סינון': 'text-red-600 bg-red-50',
     'אפיון': 'text-blue-700 bg-blue-50',
-    'מחירה': 'text-amber-700 bg-amber-50',
+    'מכירה': 'text-amber-700 bg-amber-50',
     'סגירה': 'text-purple-700 bg-purple-50',
     'לקוח פעיל': 'text-green-700 bg-green-50',
     'ארכיון': 'text-gray-600 bg-gray-100',

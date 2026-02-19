@@ -5,12 +5,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { pipelineApi, dealsApi, Deal } from '@/lib/api';
 import { formatCurrency } from '@/lib/utils';
 
-const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
+const STAGES = ['סינון', 'אפיון', 'מכירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
 
 const STAGE_COLORS: Record<string, { bg: string; text: string; dot: string; headerBg: string }> = {
-  'צינון':       { bg: 'bg-slate-50',   text: 'text-slate-700',   dot: 'bg-slate-400',   headerBg: 'bg-slate-100' },
+  'סינון':       { bg: 'bg-slate-50',   text: 'text-slate-700',   dot: 'bg-slate-400',   headerBg: 'bg-slate-100' },
   'אפיון':      { bg: 'bg-blue-50',    text: 'text-blue-700',    dot: 'bg-blue-500',    headerBg: 'bg-blue-100' },
-  'מחירה':      { bg: 'bg-amber-50',   text: 'text-amber-700',   dot: 'bg-amber-500',   headerBg: 'bg-amber-100' },
+  'מכירה':      { bg: 'bg-amber-50',   text: 'text-amber-700',   dot: 'bg-amber-500',   headerBg: 'bg-amber-100' },
   'סגירה':      { bg: 'bg-purple-50',  text: 'text-purple-700',  dot: 'bg-purple-500',  headerBg: 'bg-purple-100' },
   'לקוח פעיל':  { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', headerBg: 'bg-emerald-100' },
   'ארכיון':     { bg: 'bg-gray-50',    text: 'text-gray-600',    dot: 'bg-gray-400',    headerBg: 'bg-gray-100' },

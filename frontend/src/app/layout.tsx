@@ -15,12 +15,12 @@ function NewLeadModal({ open, onClose }: { open: boolean; onClose: () => void })
   const [form, setForm] = useState({
     name: '',
     phone: '',
-    stage: 'צינון',
+    stage: 'סינון',
     value: '',
     notes: '',
   });
 
-  const STAGES = ['צינון', 'אפיון', 'מחירה'];
+  const STAGES = ['סינון', 'אפיון', 'מכירה'];
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -41,7 +41,7 @@ function NewLeadModal({ open, onClose }: { open: boolean; onClose: () => void })
       qc.invalidateQueries({ queryKey: ['contacts'] });
       qc.invalidateQueries({ queryKey: ['deals'] });
       qc.invalidateQueries({ queryKey: ['pipeline'] });
-      setForm({ name: '', phone: '', stage: 'צינון', value: '', notes: '' });
+      setForm({ name: '', phone: '', stage: 'סינון', value: '', notes: '' });
       onClose();
     },
   });

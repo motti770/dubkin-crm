@@ -6,7 +6,7 @@ import { formatCurrency } from '@/lib/utils';
 import Link from 'next/link';
 import { useState } from 'react';
 
-const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל'];
+const STAGES = ['סינון', 'אפיון', 'מכירה', 'סגירה', 'לקוח פעיל'];
 
 function getGreeting() {
   const h = new Date().getHours();
@@ -297,9 +297,9 @@ function getDaysSince(dateStr?: string): number {
 
 function getStageColor(stage: string): string {
   const colors: Record<string, string> = {
-    'צינון': 'bg-red-500',
+    'סינון': 'bg-red-500',
     'אפיון': 'bg-blue-500',
-    'מחירה': 'bg-amber-500',
+    'מכירה': 'bg-amber-500',
     'סגירה': 'bg-purple-500',
     'לקוח פעיל': 'bg-green-500',
   };
@@ -308,9 +308,9 @@ function getStageColor(stage: string): string {
 
 function getStageBadge(stage: string): string {
   const badges: Record<string, string> = {
-    'צינון': 'text-red-600 bg-red-50',
+    'סינון': 'text-red-600 bg-red-50',
     'אפיון': 'text-blue-700 bg-blue-50',
-    'מחירה': 'text-amber-700 bg-amber-50',
+    'מכירה': 'text-amber-700 bg-amber-50',
     'סגירה': 'text-purple-700 bg-purple-50',
     'לקוח פעיל': 'text-green-700 bg-green-50',
   };

@@ -79,7 +79,7 @@ export interface Deal {
   contact_name?: string;
   contact_phone?: string;
   value?: string | number;
-  stage_display: string;  // Hebrew: צינון, אפיון, etc.
+  stage_display: string;  // Hebrew: סינון, אפיון, etc.
   stage_name?: string;    // internal: lead, etc.
   stage?: string;         // alias
   stage_id?: number;
@@ -120,11 +120,19 @@ export const contactsApi = {
 
 // ─── Deals ────────────────────────────────────────────────────────────────────
 export const dealsApi = {
-  list: () => fetchApi<{ data: Deal[]; total: number }>('/deals'),
+  list: (params?: { contact_id?: number }) =>
+    fetchApi<{ data: Deal[]; total: number }>(
+      `/deals${params?.contact_id ? `?contact_id=${params.contact_id}` : ''}`
+    ),
+  get: (id: number) => fetchApi<Deal>(`/deals/${id}`),
   create: (data: Partial<Deal>) =>
     fetchApi<Deal>('/deals', { method: 'POST', body: JSON.stringify(data) }),
+  update: (id: number, data: Partial<Deal>) =>
+    fetchApi<Deal>(`/deals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   updateStage: (id: number, stage: string) =>
-    fetchApi<Deal>(`/deals/${id}/stage`, { method: 'PATCH', body: JSON.stringify({ stage }) }),
+    fetchApi<Deal>(`/deals/${id}/stage`, { method: 'PATCH', body: JSON.stringify({ stage_name: stage }) }),
+  delete: (id: number) =>
+    fetchApi<{ success: boolean }>(`/deals/${id}`, { method: 'DELETE' }),
 };
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────

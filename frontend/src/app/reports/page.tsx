@@ -6,15 +6,15 @@ import { dealsApi, Deal } from '@/lib/api';
 import { formatCurrency } from '@/lib/utils';
 
 const STAGE_COLORS: Record<string, { bg: string; text: string; bar: string }> = {
-  'צינון':       { bg: 'bg-slate-100',   text: 'text-slate-700',   bar: 'bg-slate-400' },
+  'סינון':       { bg: 'bg-slate-100',   text: 'text-slate-700',   bar: 'bg-slate-400' },
   'אפיון':      { bg: 'bg-blue-50',     text: 'text-blue-700',    bar: 'bg-blue-500' },
-  'מחירה':      { bg: 'bg-amber-50',    text: 'text-amber-700',   bar: 'bg-amber-500' },
+  'מכירה':      { bg: 'bg-amber-50',    text: 'text-amber-700',   bar: 'bg-amber-500' },
   'סגירה':      { bg: 'bg-purple-50',   text: 'text-purple-700',  bar: 'bg-purple-500' },
   'לקוח פעיל':  { bg: 'bg-emerald-50',  text: 'text-emerald-700', bar: 'bg-emerald-500' },
   'ארכיון':     { bg: 'bg-gray-50',     text: 'text-gray-600',    bar: 'bg-gray-400' },
 };
 
-const ACTIVE_STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה'];
+const ACTIVE_STAGES = ['סינון', 'אפיון', 'מכירה', 'סגירה'];
 const CLOSED_STAGES = ['לקוח פעיל'];
 
 interface StageStats {
@@ -49,7 +49,7 @@ export default function ReportsPage() {
     const winRate = totalEnded > 0 ? Math.round((closedDeals.length / totalEnded) * 100) : 0;
 
     // By stage
-    const allStages = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
+    const allStages = ['סינון', 'אפיון', 'מכירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
     const maxValue = Math.max(
       ...allStages.map(stage => deals.filter(d => d.stage_display === stage).reduce((s, d) => s + (Number(d.value) || 0), 0)),
       1

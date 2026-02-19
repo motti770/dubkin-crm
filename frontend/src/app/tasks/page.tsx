@@ -93,11 +93,11 @@ export default function TasksPage() {
 
   // Add deal-based follow-up tasks
   const deals = dealsData?.data || [];
-  deals.filter(d => d.stage === 'צינון' || d.stage === 'אפיון').forEach((deal, i) => {
+  deals.filter(d => d.stage === 'סינון' || d.stage === 'אפיון').forEach((deal, i) => {
     tasks.push({
       id: 10000 + deal.id,
       text: `מעקב: ${deal.title}${deal.contact_name ? ` (${deal.contact_name})` : ''}`,
-      priority: deal.stage === 'צינון' ? 'high' : 'normal',
+      priority: deal.stage === 'סינון' ? 'high' : 'normal',
       time: `${(14 + i).toString().padStart(2, '0')}:00`,
       completed: false,
       type: 'note',

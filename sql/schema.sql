@@ -14,9 +14,9 @@ CREATE TABLE IF NOT EXISTS pipeline_stages (
 );
 
 INSERT INTO pipeline_stages (name, display_name, position, color) VALUES
-  ('lead',        'צינון',       1, '#6B7280'),
+  ('lead',        'סינון',       1, '#6B7280'),
   ('discovery',   'אפיון',       2, '#3B82F6'),
-  ('pricing',     'מחירה',       3, '#F59E0B'),
+  ('pricing',     'מכירה',       3, '#F59E0B'),
   ('closing',     'סגירה',       4, '#8B5CF6'),
   ('active',      'לקוח פעיל',   5, '#10B981'),
   ('archive',     'ארכיון',      6, '#9CA3AF')

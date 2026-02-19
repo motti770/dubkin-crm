@@ -5,12 +5,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { dealsApi, activitiesApi, contactsApi, Deal } from '@/lib/api';
 import { formatCurrency, formatDate, formatDateTime, cn } from '@/lib/utils';
 
-const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
+const STAGES = ['סינון', 'אפיון', 'מכירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
 
 const STAGE_PILL: Record<string, string> = {
-  'צינון':      'bg-slate-100 text-slate-600 border-slate-200',
+  'סינון':      'bg-slate-100 text-slate-600 border-slate-200',
   'אפיון':      'bg-blue-50 text-blue-600 border-blue-200',
-  'מחירה':      'bg-amber-50 text-amber-600 border-amber-200',
+  'מכירה':      'bg-amber-50 text-amber-600 border-amber-200',
   'סגירה':      'bg-purple-50 text-purple-600 border-purple-200',
   'לקוח פעיל': 'bg-emerald-50 text-emerald-600 border-emerald-200',
   'ארכיון':     'bg-gray-50 text-gray-500 border-gray-200',
@@ -64,7 +64,7 @@ function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
     title: '',
     contact_id: '',
     value: '',
-    stage: 'צינון',
+    stage: 'סינון',
     notes: '',
   });
 
@@ -85,7 +85,7 @@ function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
       qc.invalidateQueries({ queryKey: ['deals'] });
       qc.invalidateQueries({ queryKey: ['pipeline'] });
       setOpen(false);
-      setForm({ title: '', contact_id: '', value: '', stage: 'צינון', notes: '' });
+      setForm({ title: '', contact_id: '', value: '', stage: 'סינון', notes: '' });
       onSuccess();
     },
   });
