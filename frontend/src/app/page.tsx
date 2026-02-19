@@ -26,13 +26,13 @@ export default function DashboardPage() {
   const contacts = contactsData?.data || [];
   const activities = (activitiesData?.data || []).slice(0, 6);
 
-  const openDeals = deals.filter(d => (d.stage_display || d.stage) !== 'ארכיון');
+  const openDeals = deals.filter(d => d.stage !== 'ארכיון');
   const totalValue = openDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
   const activeCount = openDeals.length;
 
   // Filtered deals for pipeline section
   const filteredDeals = stageFilter
-    ? openDeals.filter(d => (d.stage_display || d.stage) === stageFilter)
+    ? openDeals.filter(d => d.stage === stageFilter)
     : openDeals;
 
   return (
@@ -259,7 +259,7 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-0.5">
                     <h4 className="text-slate-900 font-bold text-sm truncate">
-                      {deal.contact_name || deal.name || deal.title}
+                      {deal.contact_name || deal.title}
                     </h4>
                     {deal.value ? (
                       <span className="text-slate-900 font-bold text-sm">
@@ -267,11 +267,11 @@ export default function DashboardPage() {
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-slate-500 text-xs truncate mb-1">{deal.name || deal.title}</p>
+                  <p className="text-slate-500 text-xs truncate mb-1">{deal.title}</p>
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage_display || deal.stage)}`} />
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display || deal.stage)}`}>
-                      {deal.stage_display || deal.stage}
+                    <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage)}`} />
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage)}`}>
+                      {deal.stage}
                     </span>
                     {getDaysSince(deal.updated_at) > 5 && (
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">

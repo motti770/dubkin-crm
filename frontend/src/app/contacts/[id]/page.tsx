@@ -1,6 +1,6 @@
 'use client';
 
-import { use } from 'react';
+import { useParams } from 'next/navigation';
 import { useQuery } from '@tanstack/react-query';
 import { contactsApi, dealsApi, activitiesApi } from '@/lib/api';
 import { formatCurrency, formatDateTime } from '@/lib/utils';
@@ -38,13 +38,9 @@ function getStageBadge(stage: string): string {
   return badges[stage] || 'text-slate-600 bg-slate-50';
 }
 
-interface PageProps {
-  params: Promise<{ id: string }>;
-}
-
-export default function ContactDetailPage({ params }: PageProps) {
-  const { id } = use(params);
-  const contactId = parseInt(id, 10);
+export default function ContactDetailPage() {
+  const params = useParams();
+  const contactId = parseInt(params.id as string, 10);
 
   const { data: contactsData, isLoading: cLoading } = useQuery({
     queryKey: ['contacts'],
