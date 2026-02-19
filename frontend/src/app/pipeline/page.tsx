@@ -1,167 +1,303 @@
 'use client';
 
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { pipelineApi, dealsApi } from '@/lib/api';
-import { formatCurrency } from '@/lib/utils';
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { pipelineApi, dealsApi, Deal } from '@/lib/api';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import { GripVertical, DollarSign } from 'lucide-react';
 
-const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל'];
+const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
 
-const STAGE_COLORS: Record<string, string> = {
-  'צינון': 'bg-slate-500/20 text-slate-300',
-  'אפיון': 'bg-sky-500/20 text-sky-300',
-  'מחירה': 'bg-amber-500/20 text-amber-300',
-  'סגירה': 'bg-orange-500/20 text-orange-300',
-  'לקוח פעיל': 'bg-emerald-500/20 text-emerald-300',
+const STAGE_ACCENT: Record<string, { header: string; bubble: string; gradient: string }> = {
+  'צינון':       { header: 'text-slate-300',   bubble: 'bg-slate-500/30 text-slate-300',   gradient: 'from-slate-400/20 to-transparent' },
+  'אפיון':      { header: 'text-blue-400',    bubble: 'bg-blue-500/30 text-blue-300',     gradient: 'from-blue-400/20 to-transparent' },
+  'מחירה':      { header: 'text-amber-400',   bubble: 'bg-amber-500/30 text-amber-300',   gradient: 'from-amber-400/20 to-transparent' },
+  'סגירה':      { header: 'text-purple-400',  bubble: 'bg-purple-500/30 text-purple-300', gradient: 'from-purple-400/20 to-transparent' },
+  'לקוח פעיל':  { header: 'text-emerald-400', bubble: 'bg-emerald-500/30 text-emerald-300', gradient: 'from-emerald-400/20 to-transparent' },
+  'ארכיון':     { header: 'text-gray-400',    bubble: 'bg-gray-500/30 text-gray-300',     gradient: 'from-gray-400/20 to-transparent' },
 };
 
-export default function PipelinePage() {
-  const [activeStageIdx, setActiveStageIdx] = useState(0);
-  const queryClient = useQueryClient();
+function DealCard({ deal, isDragging }: { deal: Deal; isDragging?: boolean }) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: `deal-${deal.id}`,
+    data: { type: 'deal', deal },
+  });
 
-  const { data: pipeline = [], isLoading } = useQuery({
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        background: 'rgba(0,0,0,0.2)',
+        borderColor: 'rgba(255,255,255,0.1)',
+      }}
+      className={[
+        'rounded-xl p-3 cursor-grab active:cursor-grabbing select-none',
+        'border backdrop-blur-md transition-all duration-200',
+        'hover:border-white/20 hover:bg-black/30',
+        isDragging ? 'opacity-40' : '',
+      ].join(' ')}
+      {...attributes}
+      {...listeners}
+    >
+      <div className="flex items-start justify-between gap-2">
+        <div className="flex-1 min-w-0">
+          <p className="text-sm font-medium text-white/90 truncate">{deal.title}</p>
+          {deal.contact_name && (
+            <p className="text-xs text-white/50 mt-0.5 truncate">{deal.contact_name}</p>
+          )}
+        </div>
+        <GripVertical size={14} className="text-white/20 shrink-0 mt-0.5" />
+      </div>
+      {deal.value ? (
+        <div className="mt-2 flex items-center gap-1">
+          <DollarSign size={11} className="text-emerald-400" />
+          <span className="text-xs font-semibold text-emerald-400">{formatCurrency(deal.value)}</span>
+        </div>
+      ) : null}
+      <div className="mt-2 text-xs text-white/40">
+        {formatDate(deal.created_at)}
+      </div>
+    </div>
+  );
+}
+
+function StageColumn({
+  stage,
+  deals,
+  activeId,
+}: {
+  stage: string;
+  deals: Deal[];
+  activeId: string | null;
+}) {
+  const totalValue = deals.reduce((sum, d) => sum + (d.value || 0), 0);
+  const accent = STAGE_ACCENT[stage];
+
+  return (
+    <div
+      className={[
+        'flex flex-col rounded-2xl p-3 min-w-[270px] max-w-[290px]',
+        'border backdrop-blur-xl',
+      ].join(' ')}
+      style={{
+        minHeight: 420,
+        background: 'rgba(255,255,255,0.06)',
+        borderColor: 'rgba(255,255,255,0.12)',
+      }}
+    >
+      {/* Column header with gradient */}
+      <div className={`bg-gradient-to-b ${accent.gradient} rounded-xl px-3 py-2.5 mb-3`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className={`text-sm font-bold ${accent.header}`}>{stage}</h3>
+            {totalValue > 0 && (
+              <p className="text-xs text-white/40 mt-0.5">{formatCurrency(totalValue)}</p>
+            )}
+          </div>
+          <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 ${accent.bubble}`}>
+            {deals.length}
+          </span>
+        </div>
+      </div>
+
+      {/* Drop zone */}
+      <SortableContext
+        items={deals.map(d => `deal-${d.id}`)}
+        strategy={verticalListSortingStrategy}
+      >
+        <div className="flex flex-col gap-2 flex-1">
+          {deals.map(deal => (
+            <DealCard
+              key={deal.id}
+              deal={deal}
+              isDragging={activeId === `deal-${deal.id}`}
+            />
+          ))}
+          {deals.length === 0 && (
+            <div
+              className="flex-1 flex items-center justify-center rounded-xl min-h-[100px]"
+              style={{ border: '2px dashed rgba(255,255,255,0.15)' }}
+            >
+              <p className="text-xs text-white/30">גרור עסקה לכאן</p>
+            </div>
+          )}
+        </div>
+      </SortableContext>
+    </div>
+  );
+}
+
+export default function PipelinePage() {
+  const qc = useQueryClient();
+  const [activeId, setActiveId] = useState<string | null>(null);
+  const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
+
+  const { data: pipeline, isLoading } = useQuery({
     queryKey: ['pipeline'],
     queryFn: pipelineApi.get,
   });
 
-  const moveStage = useMutation({
+  const updateStageMutation = useMutation({
     mutationFn: ({ id, stage }: { id: number; stage: string }) =>
       dealsApi.updateStage(id, stage),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['pipeline'] });
-      queryClient.invalidateQueries({ queryKey: ['deals'] });
+      qc.invalidateQueries({ queryKey: ['pipeline'] });
+      qc.invalidateQueries({ queryKey: ['deals'] });
     },
   });
 
-  const currentStage = STAGES[activeStageIdx];
-  const stageData = pipeline.find((p) => p.stage === currentStage);
-  const deals = stageData?.deals || [];
+  // Build stage map from pipeline data
+  const stageMap: Record<string, Deal[]> = {};
+  STAGES.forEach(s => { stageMap[s] = []; });
+  if (pipeline) {
+    pipeline.forEach(({ stage, deals }) => {
+      stageMap[stage] = deals || [];
+    });
+  }
 
-  const totalValue = deals.reduce((s, d) => s + (d.value || 0), 0);
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+
+  const handleDragStart = (event: DragStartEvent) => {
+    const { active } = event;
+    setActiveId(active.id as string);
+    const deal = active.data.current?.deal as Deal;
+    setActiveDeal(deal || null);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+    setActiveDeal(null);
+
+    if (!over) return;
+
+    const dealId = parseInt((active.id as string).replace('deal-', ''));
+    const overId = over.id as string;
+
+    // Determine target stage
+    let targetStage: string | null = null;
+
+    if (overId.startsWith('stage-')) {
+      targetStage = overId.replace('stage-', '');
+    } else if (overId.startsWith('deal-')) {
+      // Find which stage contains the target deal
+      const targetDealId = parseInt(overId.replace('deal-', ''));
+      for (const [stage, deals] of Object.entries(stageMap)) {
+        if (deals.find(d => d.id === targetDealId)) {
+          targetStage = stage;
+          break;
+        }
+      }
+    }
+
+    if (!targetStage) return;
+
+    // Find current stage of the dragged deal
+    let currentStage: string | null = null;
+    for (const [stage, deals] of Object.entries(stageMap)) {
+      if (deals.find(d => d.id === dealId)) {
+        currentStage = stage;
+        break;
+      }
+    }
+
+    if (currentStage === targetStage) return;
+
+    updateStageMutation.mutate({ id: dealId, stage: targetStage });
+  };
+
+  const handleDragOver = (event: DragOverEvent) => {
+    // Handled by dnd-kit automatically
+  };
+
+  if (isLoading) {
+    return (
+      <div className="relative z-10 p-6">
+        <h1 className="text-2xl font-bold text-white mb-6">פייפליין</h1>
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {STAGES.map(s => (
+            <div
+              key={s}
+              className="min-w-[270px] h-96 rounded-2xl backdrop-blur-xl animate-pulse"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-md border-b border-border px-4 py-3">
-        <h1 className="text-base font-bold">פייפליין מכירות</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">החלק בין השלבים</p>
+    <div className="relative z-10 p-6">
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-white">פייפליין</h1>
+        <p className="text-white/50 text-sm mt-1">גרור עסקאות בין השלבים</p>
       </div>
 
-      {/* Stage Tabs (scrollable) */}
-      <div className="flex overflow-x-auto gap-2 px-4 py-3 scrollbar-hide">
-        {STAGES.map((stage, i) => {
-          const count = pipeline.find((p) => p.stage === stage)?.deals.length || 0;
-          return (
-            <button
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        onDragOver={handleDragOver}
+      >
+        <div className="flex gap-4 overflow-x-auto pb-6">
+          {STAGES.map(stage => (
+            <StageColumn
               key={stage}
-              onClick={() => setActiveStageIdx(i)}
-              className={cn(
-                'flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-medium whitespace-nowrap transition-all min-h-[36px]',
-                activeStageIdx === i
-                  ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                  : 'bg-card border border-border text-muted-foreground'
-              )}
-            >
-              {stage}
-              {count > 0 && (
-                <span className={cn(
-                  'rounded-full px-1.5 py-0.5 text-xs font-bold',
-                  activeStageIdx === i ? 'bg-white/20 text-white' : 'bg-secondary text-muted-foreground'
-                )}>
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Navigation arrows + summary */}
-      <div className="flex items-center justify-between px-4 pb-2">
-        <button
-          onClick={() => setActiveStageIdx(Math.max(0, activeStageIdx - 1))}
-          disabled={activeStageIdx === 0}
-          className="p-2 rounded-lg disabled:opacity-30 hover:bg-secondary active:bg-secondary/70 min-h-[44px] min-w-[44px] flex items-center justify-center"
-        >
-          <ChevronRight size={20} />
-        </button>
-
-        <div className="text-center">
-          <div className={cn('inline-block px-3 py-1 rounded-lg text-xs font-medium', STAGE_COLORS[currentStage])}>
-            {currentStage}
-          </div>
-          {deals.length > 0 && (
-            <p className="text-xs text-muted-foreground mt-1">
-              {deals.length} עסקאות · {formatCurrency(totalValue)}
-            </p>
-          )}
+              stage={stage}
+              deals={stageMap[stage] || []}
+              activeId={activeId}
+            />
+          ))}
         </div>
 
-        <button
-          onClick={() => setActiveStageIdx(Math.min(STAGES.length - 1, activeStageIdx + 1))}
-          disabled={activeStageIdx === STAGES.length - 1}
-          className="p-2 rounded-lg disabled:opacity-30 hover:bg-secondary active:bg-secondary/70 min-h-[44px] min-w-[44px] flex items-center justify-center"
-        >
-          <ChevronLeft size={20} />
-        </button>
-      </div>
-
-      {/* Deal Cards */}
-      <div className="px-4 pb-4 space-y-3">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 size={24} className="animate-spin text-muted-foreground" />
-          </div>
-        ) : deals.length === 0 ? (
-          <div className="text-center py-16 text-muted-foreground">
-            <p className="text-4xl mb-3">📭</p>
-            <p className="text-sm">אין עסקאות בשלב זה</p>
-          </div>
-        ) : (
-          deals.map((deal) => (
+        <DragOverlay>
+          {activeDeal ? (
             <div
-              key={deal.id}
-              className="rounded-2xl border border-border bg-card p-4 space-y-3 active:scale-[0.98] transition-transform"
+              className="rounded-xl p-3 shadow-2xl w-[260px] backdrop-blur-xl"
+              style={{
+                background: 'rgba(0,0,0,0.4)',
+                border: '2px solid rgba(59,130,246,0.6)',
+                boxShadow: '0 0 20px rgba(59,130,246,0.3), 0 0 60px rgba(59,130,246,0.1)',
+              }}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="font-semibold">{deal.title}</p>
-                  {deal.contact_name && (
-                    <p className="text-xs text-muted-foreground mt-0.5">{deal.contact_name}</p>
-                  )}
-                </div>
-                {deal.value ? (
-                  <span className="text-sm font-bold text-emerald-400 shrink-0">
-                    {formatCurrency(deal.value)}
-                  </span>
-                ) : null}
-              </div>
-
-              {/* Move to stage buttons */}
-              <div className="flex gap-2 flex-wrap">
-                {activeStageIdx > 0 && (
-                  <button
-                    onClick={() => moveStage.mutate({ id: deal.id, stage: STAGES[activeStageIdx - 1] })}
-                    className="text-xs px-3 py-2 rounded-lg bg-secondary hover:bg-secondary/80 text-muted-foreground min-h-[36px]"
-                  >
-                    ← {STAGES[activeStageIdx - 1]}
-                  </button>
-                )}
-                {activeStageIdx < STAGES.length - 1 && (
-                  <button
-                    onClick={() => moveStage.mutate({ id: deal.id, stage: STAGES[activeStageIdx + 1] })}
-                    className="text-xs px-3 py-2 rounded-lg bg-blue-500/20 text-blue-300 hover:bg-blue-500/30 min-h-[36px]"
-                  >
-                    {STAGES[activeStageIdx + 1]} →
-                  </button>
-                )}
-              </div>
+              <p className="text-sm font-medium text-white">{activeDeal.title}</p>
+              {activeDeal.contact_name && (
+                <p className="text-xs text-white/50">{activeDeal.contact_name}</p>
+              )}
+              {activeDeal.value ? (
+                <p className="text-xs text-emerald-400 mt-1">{formatCurrency(activeDeal.value)}</p>
+              ) : null}
             </div>
-          ))
-        )}
-      </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
     </div>
   );
 }
