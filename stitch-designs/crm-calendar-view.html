@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>CRM Calendar View</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0a47c2",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#101622",
+                        "glass-white": "rgba(255, 255, 255, 0.7)",
+                        "glass-border": "rgba(255, 255, 255, 0.5)",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: { "DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px" },
+                    boxShadow: {
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+                        "glow": "0 0 15px rgba(10, 71, 194, 0.3)"
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom Scrollbar for horizontal scrolling areas */
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .glass-card-blue {
+            background: rgba(235, 242, 255, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-left: 4px solid #0a47c2;
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .glass-card-purple {
+            background: rgba(245, 240, 255, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-left: 4px solid #8b5cf6;
+            border-top: 1px solid rgba(255, 255, 255, 0.6);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+            border-right: 1px solid rgba(255, 255, 255, 0.6);
+        }
+
+        body {
+            background: linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 50%, #eef2ff 100%);
+            min-height: 100vh;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="font-display text-slate-900 antialiased selection:bg-primary selection:text-white">
+<div class="relative mx-auto flex h-screen w-full max-w-md flex-col overflow-hidden bg-white/30 backdrop-blur-sm shadow-2xl sm:rounded-[3rem] sm:border-8 sm:border-slate-900 sm:h-[900px] sm:my-10">
+<!-- Header Section -->
+<header class="relative z-20 flex flex-col pt-12 pb-2 px-6">
+<div class="flex items-center justify-between mb-4">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white/50 backdrop-blur-md shadow-sm transition active:scale-95">
+<span class="material-symbols-outlined text-slate-700">menu</span>
+</button>
+<h1 class="text-xl font-bold text-slate-900">יומן פגישות</h1>
+<div class="relative">
+<button class="flex h-10 w-10 items-center justify-center rounded-full overflow-hidden border-2 border-white shadow-sm transition active:scale-95">
+<img alt="User Profile" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtgjA3VnJHOev7Xf1eg9sUq3gwmBP2smGCzP7ifZy5lCjmKPnfxDjlvl9gYKJ5KhX-fu6diGFRWmWmJ4XJkoiUG_of5LCPn4pLqp97RrCrhqkixtC-iU-OmCpXQMumd7HeV2VtkETRYklKvghx8Eso3PM3dFtlFehqHfFjQPGgZZ19IbvIui-Cnsh44F8IFcjS0uxs_U7V_2R6iq5b-GSI7qhkLmBy-tTOXvY214qLugY2fc9fEI7l0ai6DqI_JY-8BfYTrvbHETU"/>
+</button>
+<span class="absolute top-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
+</div>
+</div>
+<!-- Sync Indicator -->
+<div class="mx-auto flex items-center gap-2 rounded-full bg-white/40 px-4 py-1.5 backdrop-blur-sm border border-white/40 shadow-sm">
+<span class="material-symbols-outlined text-green-600 text-[18px]">check_circle</span>
+<span class="text-xs font-semibold text-slate-600">סנכרון עם Google Calendar פעיל</span>
+</div>
+</header>
+<!-- Date Picker (Horizontal Scroll) -->
+<div class="relative z-20 pb-2">
+<div class="flex items-center justify-between px-6 mb-3">
+<h2 class="text-lg font-bold text-slate-800">נובמבר 2023</h2>
+<div class="flex gap-2">
+<button class="p-1 text-slate-500 hover:text-primary transition"><span class="material-symbols-outlined">chevron_right</span></button>
+<button class="p-1 text-slate-500 hover:text-primary transition"><span class="material-symbols-outlined">chevron_left</span></button>
+</div>
+</div>
+<div class="flex gap-3 overflow-x-auto hide-scrollbar px-6 pb-4">
+<!-- Active Date -->
+<div class="flex flex-col items-center justify-center gap-1 min-w-[64px] h-[84px] rounded-2xl bg-primary shadow-glow shadow-blue-500/30 text-white shrink-0 cursor-pointer transform scale-105 transition-all">
+<span class="text-xs font-medium opacity-80">יום ג׳</span>
+<span class="text-2xl font-bold">14</span>
+<span class="h-1.5 w-1.5 rounded-full bg-white mt-1"></span>
+</div>
+<!-- Inactive Dates -->
+<div class="flex flex-col items-center justify-center gap-1 min-w-[60px] h-[80px] rounded-2xl glass-panel text-slate-600 shrink-0 cursor-pointer hover:bg-white/80 transition-all">
+<span class="text-xs font-medium opacity-60">יום ד׳</span>
+<span class="text-xl font-bold">15</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 min-w-[60px] h-[80px] rounded-2xl glass-panel text-slate-600 shrink-0 cursor-pointer hover:bg-white/80 transition-all">
+<span class="text-xs font-medium opacity-60">יום ה׳</span>
+<span class="text-xl font-bold">16</span>
+<span class="h-1.5 w-1.5 rounded-full bg-primary/40 mt-1"></span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 min-w-[60px] h-[80px] rounded-2xl glass-panel text-slate-600 shrink-0 cursor-pointer hover:bg-white/80 transition-all">
+<span class="text-xs font-medium opacity-60">יום ו׳</span>
+<span class="text-xl font-bold">17</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 min-w-[60px] h-[80px] rounded-2xl glass-panel text-slate-400 shrink-0 cursor-pointer hover:bg-white/80 transition-all">
+<span class="text-xs font-medium opacity-60">שבת</span>
+<span class="text-xl font-bold">18</span>
+</div>
+<div class="flex flex-col items-center justify-center gap-1 min-w-[60px] h-[80px] rounded-2xl glass-panel text-slate-600 shrink-0 cursor-pointer hover:bg-white/80 transition-all">
+<span class="text-xs font-medium opacity-60">יום א׳</span>
+<span class="text-xl font-bold">19</span>
+</div>
+</div>
+</div>
+<!-- Main Timeline Area -->
+<main class="flex-1 overflow-y-auto relative w-full hide-scrollbar pb-24 bg-gradient-to-b from-white/0 to-white/40">
+<!-- Current Time Line -->
+<div class="absolute w-full z-10 flex items-center top-[340px] pointer-events-none">
+<div class="w-16 text-right pr-4 text-xs font-bold text-primary">11:45</div>
+<div class="flex-1 h-[2px] bg-primary relative">
+<div class="absolute right-0 -top-1.5 h-3 w-3 rounded-full bg-primary shadow-glow"></div>
+</div>
+</div>
+<div class="flex flex-col gap-6 py-6 min-h-[800px]">
+<!-- 09:00 Slot -->
+<div class="flex w-full group">
+<div class="w-16 shrink-0 text-right pr-5 pt-2 text-xs font-medium text-slate-400 relative">
+                        09:00
+                    </div>
+<div class="flex-1 pr-2 pl-4 border-t border-slate-200/40 relative min-h-[100px]">
+<!-- Appointment Card -->
+<div class="glass-card-blue p-3 rounded-xl shadow-glass transform transition hover:scale-[1.02] cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">פגישת ייעוץ</span>
+<span class="material-symbols-outlined text-slate-400 text-sm">more_horiz</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 leading-tight mb-1">אסטרטגיה שנתית - דני כהן</h3>
+<div class="flex items-center gap-2 mt-2">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">schedule</span>
+<span class="text-xs text-slate-500 font-medium">09:00 - 10:30</span>
+</div>
+<div class="flex items-center gap-2 mt-2 pt-2 border-t border-primary/10">
+<img alt="Client Avatar" class="h-5 w-5 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCr_VMBUK-z-SGATc2RQ0odtK2poZRqHQzFYYjNL_z1wOF53Puw6S1SVtTi1-U_faPc9Ms98-E-j3DDF8UtQ2OopKgEEYv2Spv_Y-jcmm5S_OLx4S9gIj-Yth0P5cEWchYcRTbHk8aQ81WXrwe4hFD3_Cq4kuXW5pa0kRqWjVpGjQIfikWsGsWpwgXZ4WiBzQiWQB_xvVgCevAHFNCpGu8Fx_dquqonqsWvQnk29GLOxl3DjvyvfbbmH3YQxORpGcO6qm2le7drU3g"/>
+<span class="text-xs text-slate-600">דני כהן, מנכ״ל</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 10:00 Slot (Empty) -->
+<div class="flex w-full group">
+<div class="w-16 shrink-0 text-right pr-5 text-xs font-medium text-slate-400">10:00</div>
+<div class="flex-1 border-t border-slate-200/40 h-10"></div>
+</div>
+<!-- 11:00 Slot (Empty) -->
+<div class="flex w-full group">
+<div class="w-16 shrink-0 text-right pr-5 text-xs font-medium text-slate-400">11:00</div>
+<div class="flex-1 border-t border-slate-200/40 h-10"></div>
+</div>
+<!-- 12:00 Slot -->
+<div class="flex w-full group mt-4">
+<div class="w-16 shrink-0 text-right pr-5 pt-2 text-xs font-medium text-slate-400 relative">
+                        12:00
+                    </div>
+<div class="flex-1 pr-2 pl-4 border-t border-slate-200/40 relative min-h-[90px]">
+<!-- Appointment Card 2 -->
+<div class="glass-card-purple p-3 rounded-xl shadow-glass transform transition hover:scale-[1.02] cursor-pointer">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-purple-700 bg-purple-100 px-2 py-0.5 rounded-md">Follow-up</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 leading-tight mb-1">שיחת זום - חברת אלוני</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">videocam</span>
+<span class="text-xs text-slate-500 font-medium">12:30 - 13:15</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 13:00 Slot -->
+<div class="flex w-full group">
+<div class="w-16 shrink-0 text-right pr-5 text-xs font-medium text-slate-400">13:00</div>
+<div class="flex-1 border-t border-slate-200/40 h-14"></div>
+</div>
+<!-- 14:00 Slot -->
+<div class="flex w-full group">
+<div class="w-16 shrink-0 text-right pr-5 text-xs font-medium text-slate-400">14:00</div>
+<div class="flex-1 border-t border-slate-200/40 h-14"></div>
+</div>
+<!-- 15:00 Slot -->
+<div class="flex w-full group">
+<div class="w-16 shrink-0 text-right pr-5 pt-2 text-xs font-medium text-slate-400 relative">
+                        15:00
+                    </div>
+<div class="flex-1 pr-2 pl-4 border-t border-slate-200/40 relative min-h-[90px]">
+<!-- Appointment Card 3 -->
+<div class="glass-card-blue p-3 rounded-xl shadow-glass transform transition hover:scale-[1.02] cursor-pointer opacity-70">
+<div class="flex justify-between items-start mb-2">
+<span class="text-xs font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-md">אישי</span>
+</div>
+<h3 class="text-sm font-bold text-slate-800 leading-tight mb-1">איסוף ילדים</h3>
+<div class="flex items-center gap-2 mt-1">
+<span class="material-symbols-outlined text-slate-400 text-[16px]">schedule</span>
+<span class="text-xs text-slate-500 font-medium">15:00 - 16:00</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="absolute bottom-24 left-6 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-[#0a47c2] text-white shadow-lg shadow-blue-600/40 transition hover:scale-110 active:scale-95">
+<span class="material-symbols-outlined text-3xl">add</span>
+</button>
+<!-- Bottom Navigation (Glassmorphism) -->
+<div class="absolute bottom-0 w-full z-40">
+<div class="glass-panel border-t border-white/40 flex justify-between items-center px-6 pb-6 pt-3 rounded-t-2xl">
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#606e8a] hover:text-primary transition" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="text-xs font-medium">בית</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-primary" href="#">
+<div class="flex h-8 w-12 items-center justify-center rounded-2xl bg-primary/10">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+</div>
+<span class="text-xs font-bold">יומן</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#606e8a] hover:text-primary transition" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">group</span>
+<span class="text-xs font-medium">לקוחות</span>
+</a>
+<a class="flex flex-1 flex-col items-center justify-end gap-1 text-[#606e8a] hover:text-primary transition" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="text-xs font-medium">הגדרות</span>
+</a>
+</div>
+</div>
+</div>
+</body></html>

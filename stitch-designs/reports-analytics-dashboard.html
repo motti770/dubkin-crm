@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Reports and Analytics Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "primary-dark": "#2563eb",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                        "glass-border": "rgba(255, 255, 255, 0.6)",
+                        "glass-bg": "rgba(255, 255, 255, 0.75)",
+                        "navy-900": "#1e293b",
+                        "navy-700": "#334155",
+                        "navy-500": "#64748b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "Heebo", "sans-serif"],
+                        "body": ["Heebo", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.5rem", "lg": "1rem", "xl": "1.5rem", "2xl": "2rem", "full": "9999px"},
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.1)',
+                        'soft': '0 4px 6px -1px rgba(60, 131, 246, 0.1), 0 2px 4px -1px rgba(60, 131, 246, 0.06)',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #f0f9ff 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px 0 rgba(60, 131, 246, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background-color: rgba(60, 131, 246, 0.2);
+            border-radius: 20px;
+        }
+
+        /* Circular Progress */
+        .progress-ring__circle {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-navy-900 selection:bg-primary selection:text-white pb-20 overflow-x-hidden">
+<!-- Header -->
+<header class="sticky top-0 z-30 flex items-center justify-between px-6 pt-12 pb-4 glass-card border-b border-white/50 rounded-b-xl">
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/50 transition-colors text-primary">
+<span class="material-symbols-outlined !text-[24px]">arrow_forward</span>
+</button>
+<h1 class="text-lg font-bold text-navy-900 tracking-tight">דוחות וביצועים</h1>
+<button class="flex items-center justify-center p-2 rounded-full hover:bg-white/50 transition-colors text-navy-700">
+<span class="material-symbols-outlined !text-[24px]">more_horiz</span>
+</button>
+</header>
+<!-- Main Content -->
+<main class="px-5 py-6 space-y-6">
+<!-- Revenue Chart Card -->
+<div class="glass-card rounded-2xl p-6 relative overflow-hidden">
+<!-- Decorative blurred blobs behind content -->
+<div class="absolute top-0 right-0 w-32 h-32 bg-primary/10 rounded-full blur-3xl -z-10"></div>
+<div class="flex justify-between items-start mb-2">
+<div>
+<h2 class="text-navy-500 text-sm font-medium mb-1">הכנסות חודשיות</h2>
+<div class="flex items-baseline gap-2">
+<span class="text-3xl font-extrabold text-navy-900 tracking-tight">₪124,500</span>
+</div>
+</div>
+<div class="flex items-center gap-1 bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">
+<span class="material-symbols-outlined !text-[14px]">trending_up</span>
+<span>12%</span>
+</div>
+</div>
+<p class="text-xs text-navy-500 mb-6">חודש אחרון בהשוואה לקודם</p>
+<!-- Chart Area -->
+<div class="h-48 w-full relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 300 150">
+<defs>
+<lineargradient id="gradient-fill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#3c83f6" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#3c83f6" stop-opacity="0"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Lines -->
+<line stroke="#e2e8f0" stroke-dasharray="4 4" x1="0" x2="300" y1="30" y2="30"></line>
+<line stroke="#e2e8f0" stroke-dasharray="4 4" x1="0" x2="300" y1="70" y2="70"></line>
+<line stroke="#e2e8f0" stroke-dasharray="4 4" x1="0" x2="300" y1="110" y2="110"></line>
+<!-- Area Fill -->
+<path d="M0,120 C40,110 50,80 80,70 C120,55 140,90 180,60 C220,30 250,40 300,10 L300,150 L0,150 Z" fill="url(#gradient-fill)"></path>
+<!-- Line -->
+<path d="M0,120 C40,110 50,80 80,70 C120,55 140,90 180,60 C220,30 250,40 300,10" fill="none" stroke="#3c83f6" stroke-linecap="round" stroke-width="3"></path>
+<!-- Points -->
+<circle cx="80" cy="70" fill="#fff" r="4" stroke="#3c83f6" stroke-width="2"></circle>
+<circle cx="180" cy="60" fill="#fff" r="4" stroke="#3c83f6" stroke-width="2"></circle>
+<circle cx="300" cy="10" fill="#fff" r="4" stroke="#3c83f6" stroke-width="2"></circle>
+</svg>
+<!-- X-Axis Labels -->
+<div class="flex justify-between text-xs text-navy-500 mt-2 px-1">
+<span>ינו</span>
+<span>פבר</span>
+<span>מרץ</span>
+<span>אפר</span>
+<span>מאי</span>
+<span>יוני</span>
+</div>
+</div>
+</div>
+<!-- KPI Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Conversion Rate -->
+<div class="glass-card rounded-2xl p-5 flex flex-col items-center justify-between">
+<div class="w-full flex justify-between items-center mb-2">
+<h3 class="text-navy-700 text-sm font-bold">יחס המרה</h3>
+<div class="bg-primary/10 rounded-full p-1.5">
+<span class="material-symbols-outlined !text-[16px] text-primary">percent</span>
+</div>
+</div>
+<div class="relative w-24 h-24 flex items-center justify-center my-2">
+<svg class="w-full h-full transform -rotate-90">
+<circle cx="48" cy="48" fill="none" r="36" stroke="#e2e8f0" stroke-linecap="round" stroke-width="8"></circle>
+<circle cx="48" cy="48" fill="none" r="36" stroke="#3c83f6" stroke-dasharray="226" stroke-dashoffset="150" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-xl font-extrabold text-navy-900">12%</span>
+</div>
+</div>
+<div class="flex items-center gap-1 text-green-600 text-xs font-semibold bg-green-50 px-2 py-1 rounded-md w-full justify-center mt-1">
+<span class="material-symbols-outlined !text-[12px]">arrow_upward</span>
+<span>2.5%</span>
+</div>
+</div>
+<!-- Closed Deals -->
+<div class="glass-card rounded-2xl p-5 flex flex-col justify-between">
+<div class="w-full flex justify-between items-center mb-2">
+<h3 class="text-navy-700 text-sm font-bold">עסקאות שנסגרו</h3>
+<div class="bg-primary/10 rounded-full p-1.5">
+<span class="material-symbols-outlined !text-[16px] text-primary">check_circle</span>
+</div>
+</div>
+<div class="flex flex-col items-center my-2 space-y-2">
+<span class="text-2xl font-extrabold text-navy-900">24<span class="text-navy-400 text-lg font-medium">/30</span></span>
+<span class="text-xs text-navy-500 font-medium">80% מהיעד החודשי</span>
+</div>
+<div class="w-full bg-slate-100 rounded-full h-2.5 mt-2">
+<div class="bg-primary h-2.5 rounded-full" style="width: 80%"></div>
+</div>
+<div class="text-xs text-center text-navy-400 mt-2">נותרו 6 ימים</div>
+</div>
+</div>
+<!-- Top Lead Sources -->
+<div class="glass-card rounded-2xl p-6">
+<h3 class="text-navy-900 text-lg font-bold mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary !text-[20px]">donut_small</span>
+                מקורות לידים מובילים
+            </h3>
+<div class="space-y-4">
+<!-- Source 1 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-600">
+<span class="material-symbols-outlined !text-[20px]">photo_camera</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-navy-900">אינסטגרם</span>
+<span class="text-xs text-navy-500">קמפיין סטורי</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-navy-900">45%</span>
+<span class="text-xs text-green-600 font-medium">+5%</span>
+</div>
+</div>
+<!-- Source 2 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+<span class="material-symbols-outlined !text-[20px]">search</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-navy-900">גוגל אדס</span>
+<span class="text-xs text-navy-500">חיפוש ממומן</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-navy-900">30%</span>
+<span class="text-xs text-navy-400 font-medium">ללא שינוי</span>
+</div>
+</div>
+<!-- Source 3 -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+<span class="material-symbols-outlined !text-[20px]">groups</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-navy-900">המלצות</span>
+<span class="text-xs text-navy-500">לקוחות קיימים</span>
+</div>
+</div>
+<div class="flex flex-col items-end">
+<span class="text-sm font-bold text-navy-900">25%</span>
+<span class="text-xs text-red-500 font-medium">-2%</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-5 py-3 text-sm text-primary font-bold bg-primary/5 hover:bg-primary/10 rounded-xl transition-colors">
+                צפה בכל המקורות
+            </button>
+</div>
+</main>
+<!-- Bottom Navigation -->
+<nav class="fixed bottom-0 w-full glass-card border-t border-white/60 z-50 rounded-t-2xl pb-safe">
+<div class="flex justify-around items-center h-16 px-2">
+<!-- Home -->
+<a class="flex flex-col items-center justify-center w-full h-full text-navy-500 hover:text-primary transition-colors gap-1 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 0;">home</span>
+<span class="text-[10px] font-medium">בית</span>
+</a>
+<!-- Leads -->
+<a class="flex flex-col items-center justify-center w-full h-full text-navy-500 hover:text-primary transition-colors gap-1 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 0;">group</span>
+<span class="text-[10px] font-medium">לידים</span>
+</a>
+<!-- Reports (Active) -->
+<a class="flex flex-col items-center justify-center w-full h-full text-primary gap-1 relative" href="#">
+<div class="absolute -top-3 w-10 h-1 bg-primary rounded-b-lg shadow-[0_0_10px_rgba(60,131,246,0.5)]"></div>
+<span class="material-symbols-outlined scale-110" style="font-variation-settings: 'FILL' 1;">bar_chart</span>
+<span class="text-[10px] font-bold">דוחות</span>
+</a>
+<!-- Settings -->
+<a class="flex flex-col items-center justify-center w-full h-full text-navy-500 hover:text-primary transition-colors gap-1 group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span class="text-[10px] font-medium">הגדרות</span>
+</a>
+</div>
+<!-- Safe Area Spacer for iOS Home Indicator -->
+<div class="h-4 w-full"></div>
+</nav>
+</body></html>

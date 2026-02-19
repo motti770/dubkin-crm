@@ -150,20 +150,20 @@ export default function PipelinePage() {
   };
 
   return (
-    <div className="pt-8 px-6 pb-6">
+    <div className="pt-8 px-6 pb-24 max-w-md mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900">פייפליין</h1>
         <p className="text-slate-500 text-sm mt-1">ניהול שלבי העסקאות</p>
       </div>
 
       {isLoading ? (
-        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar snap-x">
           {STAGES.map(s => (
-            <div key={s} className="min-w-[280px] h-80 rounded-2xl glass-panel animate-pulse" />
+            <div key={s} className="min-w-[280px] h-80 rounded-2xl glass-panel animate-pulse snap-start" />
           ))}
         </div>
       ) : (
-        <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar">
+        <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar snap-x">
           {STAGES.map(stage => (
             <StageColumn
               key={stage}

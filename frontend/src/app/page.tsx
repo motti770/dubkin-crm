@@ -26,13 +26,13 @@ export default function DashboardPage() {
   const contacts = contactsData?.data || [];
   const activities = (activitiesData?.data || []).slice(0, 6);
 
-  const openDeals = deals.filter(d => d.stage !== 'ארכיון');
-  const totalValue = openDeals.reduce((s, d) => s + (d.value || 0), 0);
+  const openDeals = deals.filter(d => (d.stage_display || d.stage) !== 'ארכיון');
+  const totalValue = openDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
   const activeCount = openDeals.length;
 
   // Filtered deals for pipeline section
   const filteredDeals = stageFilter
-    ? openDeals.filter(d => d.stage === stageFilter)
+    ? openDeals.filter(d => (d.stage_display || d.stage) === stageFilter)
     : openDeals;
 
   return (
@@ -147,6 +147,52 @@ export default function DashboardPage() {
         </div>
       </section>
 
+      {/* חובות לגבייה */}
+      <section className="px-6 pb-4">
+        <h3 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
+          <span>💰</span> חובות לגבייה
+          <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">5,500 ₪</span>
+        </h3>
+        <div className="flex flex-col gap-3">
+          {/* מנחם */}
+          <div className="rounded-2xl border border-red-200/60 bg-gradient-to-br from-red-50/80 to-amber-50/60 p-4 flex items-center gap-3 shadow-sm">
+            <div className="h-11 w-11 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-lg font-bold shrink-0">מ</div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-slate-900 font-bold text-sm">מנחם אברמצ'ייב</h4>
+              <p className="text-red-600 text-xs font-semibold">2,500 ₪ — אוטומציית ברכות</p>
+              <p className="text-slate-400 text-[10px]">לגבות מיידית!</p>
+            </div>
+            <a
+              href={`https://wa.me/9720527001234`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-10 w-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-transform shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="material-symbols-outlined text-[18px]">chat</span>
+            </a>
+          </div>
+          {/* דסי */}
+          <div className="rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/80 to-orange-50/60 p-4 flex items-center gap-3 shadow-sm">
+            <div className="h-11 w-11 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 text-lg font-bold shrink-0">ד</div>
+            <div className="flex-1 min-w-0">
+              <h4 className="text-slate-900 font-bold text-sm">דסי רוזנטל</h4>
+              <p className="text-amber-700 text-xs font-semibold">3,000 ₪ — 3 חודשים × 1,000 ₪</p>
+              <p className="text-slate-400 text-[10px]">תשלום חודשי פלטפורמת נשים</p>
+            </div>
+            <a
+              href={`https://wa.me/972`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="h-10 w-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-transform shrink-0"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <span className="material-symbols-outlined text-[18px]">chat</span>
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Pipeline Section */}
       <section className="flex-1 rounded-t-[2.5rem] glass-panel-dark shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pt-6 pb-24 px-6 mt-2">
         <div className="flex items-center justify-between mb-4">
@@ -213,20 +259,25 @@ export default function DashboardPage() {
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-0.5">
                     <h4 className="text-slate-900 font-bold text-sm truncate">
-                      {deal.contact_name || deal.title}
+                      {deal.contact_name || deal.name || deal.title}
                     </h4>
                     {deal.value ? (
                       <span className="text-slate-900 font-bold text-sm">
-                        {formatCurrency(deal.value)}
+                        {formatCurrency(Number(deal.value))}
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-slate-500 text-xs truncate mb-1">{deal.title}</p>
-                  <div className="flex items-center gap-1.5">
-                    <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage)}`} />
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage)}`}>
-                      {deal.stage}
+                  <p className="text-slate-500 text-xs truncate mb-1">{deal.name || deal.title}</p>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage_display || deal.stage)}`} />
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display || deal.stage)}`}>
+                      {deal.stage_display || deal.stage}
                     </span>
+                    {getDaysSince(deal.updated_at) > 5 && (
+                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">
+                        ⚠️ {getDaysSince(deal.updated_at)} ימים ללא פעילות
+                      </span>
+                    )}
                   </div>
                 </div>
               </Link>
@@ -236,6 +287,12 @@ export default function DashboardPage() {
       </section>
     </div>
   );
+}
+
+function getDaysSince(dateStr?: string): number {
+  if (!dateStr) return 0;
+  const diff = Date.now() - new Date(dateStr).getTime();
+  return Math.floor(diff / (1000 * 60 * 60 * 24));
 }
 
 function getStageColor(stage: string): string {

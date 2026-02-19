@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import Link from 'next/link';
 import {
   Dialog,
   DialogContent,
@@ -22,6 +23,14 @@ const SOURCE_LABELS: Record<string, string> = {
   social: 'סושיאל',
   cold: 'קר',
   other: 'אחר',
+  // Hebrew sources
+  'ישיר': 'ישיר',
+  'שיתוף פעולה': 'שיתוף פעולה',
+  'לקוחה ישנה': 'לקוחה ישנה',
+  'לקוח ישן': 'לקוח ישן',
+  'בר (מעצבת)': 'בר',
+  'משפחה': 'משפחה',
+  'ממולץ': 'ממולץ',
 };
 
 function AddContactDialog({ onSuccess }: { onSuccess: () => void }) {
@@ -157,7 +166,13 @@ function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: n
           </div>
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-slate-900 font-bold text-sm truncate">{contact.name}</h4>
+          <Link
+            href={`/contacts/${contact.id}`}
+            onClick={e => e.stopPropagation()}
+            className="block"
+          >
+            <h4 className="text-slate-900 font-bold text-sm truncate hover:text-primary transition-colors">{contact.name}</h4>
+          </Link>
           {contact.company && (
             <p className="text-slate-500 text-xs truncate">{contact.company}</p>
           )}
@@ -166,6 +181,19 @@ function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: n
           <span className="text-[10px] font-medium text-primary bg-blue-50 px-2 py-0.5 rounded-full shrink-0">
             {SOURCE_LABELS[contact.source] || contact.source}
           </span>
+        )}
+        {/* WhatsApp quick-send button */}
+        {contact.phone && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              window.open('https://wa.me/972' + contact.phone!.replace(/\D/g, '').replace(/^0/, ''), '_blank');
+            }}
+            className="h-9 w-9 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-transform shrink-0"
+            title="שלח WhatsApp"
+          >
+            <span className="material-symbols-outlined text-[18px]">chat</span>
+          </button>
         )}
       </div>
 
@@ -287,7 +315,7 @@ export default function ContactsPage() {
   const contacts = data?.data || [];
 
   return (
-    <div className="pt-8 px-6 pb-6">
+    <div className="pt-8 px-6 pb-24 max-w-md mx-auto">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>

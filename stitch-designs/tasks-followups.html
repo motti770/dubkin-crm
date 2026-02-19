@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Tasks and Follow-ups</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700&amp;family=Manrope:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#0404ae",
+                        "background-light": "#f5f5f8",
+                        "background-dark": "#0f0f23",
+                        "glass-border": "rgba(255, 255, 255, 0.5)",
+                        "glass-bg": "rgba(255, 255, 255, 0.65)",
+                    },
+                    fontFamily: {
+                        "display": ["Heebo", "Manrope", "sans-serif"],
+                        "body": ["Heebo", "Manrope", "sans-serif"],
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+                    boxShadow: {
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+                        "float": "0 10px 40px -10px rgba(4, 4, 174, 0.3)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            background: linear-gradient(135deg, #e0f2fe 0%, #ffffff 50%, #e0e7ff 100%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        /* Hide scrollbar for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .checkbox-wrapper input:checked + div {
+            background-color: #0404ae;
+            border-color: #0404ae;
+        }
+        .checkbox-wrapper input:checked + div svg {
+            display: block;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="text-slate-900 overflow-x-hidden antialiased selection:bg-primary/20">
+<div class="relative flex h-full min-h-screen w-full flex-col">
+<!-- Header Section -->
+<header class="sticky top-0 z-20 px-6 pt-12 pb-4">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-white/50 backdrop-blur-sm shadow-sm flex items-center justify-center overflow-hidden border border-white">
+<img alt="User profile avatar" class="h-full w-full object-cover" data-alt="Portrait of a smiling young man in a business casual shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBv4KeKLXlGrUY5cVmQ1d5U2r3mZXKUxEGHtnrR6h_UrEr6IdznnhD0o2MTLdSt7OKbdc6iCjSWK6NDm0-5U62l_0e1ZCOpU7TSkzTu9kgikeatIogKmmc6tqGAcwSn9WDU2Pp8QJ01B1Ds1oFw8pvloRu3XSBFCx-N_VxLOsrCg83eNmQmuFbyHiE4WKqNH-Nnz7YArEbZTk2OtQpjq8X6IQlOKWidwaNTmMuvuPsgRglycCIUHwU9_H2Fq3q0DCFMFcOUE_M5iio"/>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-medium text-slate-500">בוקר טוב,</span>
+<span class="text-sm font-bold text-slate-800">דניאל כהן</span>
+</div>
+</div>
+<button class="h-10 w-10 rounded-full bg-white/50 hover:bg-white transition-colors flex items-center justify-center text-slate-600 shadow-sm border border-white">
+<span class="material-symbols-outlined" style="font-size: 20px;">notifications</span>
+</button>
+</div>
+<div class="flex flex-col gap-1">
+<h2 class="text-sm font-medium text-primary uppercase tracking-wide opacity-80">יום ראשון, 24 בנובמבר</h2>
+<h1 class="text-3xl font-extrabold text-slate-900 leading-tight">משימות להיום</h1>
+</div>
+<!-- Stats / Summary (Glass Cards) -->
+<div class="mt-6 grid grid-cols-2 gap-4">
+<div class="glass-card rounded-2xl p-4 shadow-glass flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-blue-100/50 blur-2xl group-hover:bg-blue-200/50 transition-colors"></div>
+<div class="flex items-center justify-between z-10">
+<span class="text-2xl font-bold text-slate-800">12</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-1.5 rounded-lg" style="font-size: 20px;">pending_actions</span>
+</div>
+<span class="text-xs font-medium text-slate-500 z-10">פתוחות</span>
+</div>
+<div class="glass-card rounded-2xl p-4 shadow-glass flex flex-col gap-2 relative overflow-hidden group">
+<div class="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-green-100/50 blur-2xl group-hover:bg-green-200/50 transition-colors"></div>
+<div class="flex items-center justify-between z-10">
+<span class="text-2xl font-bold text-slate-800">5</span>
+<span class="material-symbols-outlined text-emerald-600 bg-emerald-100 p-1.5 rounded-lg" style="font-size: 20px;">check_circle</span>
+</div>
+<span class="text-xs font-medium text-slate-500 z-10">הושלמו</span>
+</div>
+</div>
+<!-- Filter Tags (Scrollable) -->
+<div class="flex gap-3 mt-6 overflow-x-auto no-scrollbar pb-2">
+<button class="flex-shrink-0 bg-primary text-white px-5 py-2 rounded-full text-sm font-medium shadow-lg shadow-primary/20 transition-transform active:scale-95">הכל</button>
+<button class="flex-shrink-0 bg-white/60 hover:bg-white text-slate-600 px-5 py-2 rounded-full text-sm font-medium border border-white/50 backdrop-blur-sm transition-all active:scale-95">דחיפות גבוהה</button>
+<button class="flex-shrink-0 bg-white/60 hover:bg-white text-slate-600 px-5 py-2 rounded-full text-sm font-medium border border-white/50 backdrop-blur-sm transition-all active:scale-95">שיחות</button>
+<button class="flex-shrink-0 bg-white/60 hover:bg-white text-slate-600 px-5 py-2 rounded-full text-sm font-medium border border-white/50 backdrop-blur-sm transition-all active:scale-95">פגישות</button>
+</div>
+</header>
+<!-- Task List Content -->
+<main class="flex-1 px-6 pb-28 flex flex-col gap-4">
+<!-- High Priority Section -->
+<div class="mb-2">
+<h3 class="text-xs font-semibold text-slate-400 mb-3 px-1">דחיפות גבוהה</h3>
+<div class="flex flex-col gap-3">
+<!-- Task Item 1 -->
+<div class="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-shadow duration-300 group">
+<label class="flex items-start gap-4 cursor-pointer checkbox-wrapper w-full">
+<input class="peer sr-only" type="checkbox"/>
+<div class="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all mt-0.5 peer-focus:ring-2 peer-focus:ring-primary/20">
+<svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-800 group-hover:text-primary transition-colors truncate">לחזור למורן לגבי ההצעה</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center gap-1 bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                        דחיפות גבוהה
+                                    </span>
+<div class="flex items-center text-slate-400 text-xs">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">schedule</span>
+                                        10:00
+                                    </div>
+</div>
+</div>
+</label>
+</div>
+<!-- Task Item 2 -->
+<div class="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-shadow duration-300 group">
+<label class="flex items-start gap-4 cursor-pointer checkbox-wrapper w-full">
+<input class="peer sr-only" type="checkbox"/>
+<div class="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all mt-0.5 peer-focus:ring-2 peer-focus:ring-primary/20">
+<svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-800 group-hover:text-primary transition-colors truncate">שליחת דוח כספי רבעוני</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center gap-1 bg-red-100 text-red-600 px-2 py-0.5 rounded-md text-[10px] font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+                                        דחיפות גבוהה
+                                    </span>
+<div class="flex items-center text-slate-400 text-xs">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">schedule</span>
+                                        11:30
+                                    </div>
+</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+<!-- Normal Priority Section -->
+<div>
+<h3 class="text-xs font-semibold text-slate-400 mb-3 px-1 mt-2">המשך היום</h3>
+<div class="flex flex-col gap-3">
+<!-- Task Item 3 -->
+<div class="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-shadow duration-300 group">
+<label class="flex items-start gap-4 cursor-pointer checkbox-wrapper w-full">
+<input class="peer sr-only" type="checkbox"/>
+<div class="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all mt-0.5 peer-focus:ring-2 peer-focus:ring-primary/20">
+<svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-800 group-hover:text-primary transition-colors truncate">פגישת זום עם משקיעים</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center gap-1 bg-blue-100 text-blue-600 px-2 py-0.5 rounded-md text-[10px] font-bold">
+                                        רגיל
+                                    </span>
+<div class="flex items-center text-slate-400 text-xs">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">videocam</span>
+                                        14:30
+                                    </div>
+<div class="flex -space-x-2 space-x-reverse">
+<img alt="avatar" class="w-5 h-5 rounded-full border border-white" data-alt="Small avatar of a woman" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDgmw4v3YKsVi7dK6mwW5C9VeVWsAKhjIod1bHdlCMWQZXhuLCJ_pTcA_XnCvAZDW2Gfo3npUBnQb06qJqEHW9O91vvYkb2gmiPMM4th9XAP6YIF8JDMdtWHX_m3LI33al51OWMfb-7rOJhiYVSuqyyLTWhOJUUmD4reuNo3EjeYFMyZdlt70uXFlZzE9Jpv4L-7WrEQYffdS6TSGKmIFwCJA8b6xr8mexaSAiJdQvN0j0m7hnRfQY7CMnLQMBPkxhee41pBE7hDyM"/>
+<img alt="avatar" class="w-5 h-5 rounded-full border border-white" data-alt="Small avatar of a man" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUsN_M1HfH_fKqxNWwnWOhH-GZ6Du7qs3YS4WSGXkrN4oWoSYXv1nevLYl6PmR_0sEiSVOJai_XMNQpCF163Vm5Z0mtt2NSX0Sh2KdJyvC_BFnLLktanh1b8HNYK77ignTO7leB6dszmghraa_boQa2I7iWj3M-63j7SZdnJBLhnqlmhYYceqt5Xo-j0x71jWrr9HRMYG0hNgJdkVL5mY6hmGbcOrqMO6F9OW-X75m3zOdwbGkUuPHOIW-90_8c8to5tXwJHlzJQw"/>
+</div>
+</div>
+</div>
+</label>
+</div>
+<!-- Task Item 4 -->
+<div class="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-shadow duration-300 group">
+<label class="flex items-start gap-4 cursor-pointer checkbox-wrapper w-full">
+<input class="peer sr-only" type="checkbox"/>
+<div class="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all mt-0.5 peer-focus:ring-2 peer-focus:ring-primary/20">
+<svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<div class="flex-1 min-w-0">
+<p class="text-base font-semibold text-slate-800 group-hover:text-primary transition-colors truncate">שליחת חשבונית ללקוח</p>
+<div class="flex items-center gap-3 mt-2">
+<span class="inline-flex items-center gap-1 bg-emerald-100 text-emerald-600 px-2 py-0.5 rounded-md text-[10px] font-bold">
+                                        נמוך
+                                    </span>
+<div class="flex items-center text-slate-400 text-xs">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">schedule</span>
+                                        16:00
+                                    </div>
+</div>
+</div>
+</label>
+</div>
+<!-- Task Item 5 -->
+<div class="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-shadow duration-300 group opacity-60">
+<label class="flex items-start gap-4 cursor-pointer checkbox-wrapper w-full">
+<input checked="" class="peer sr-only" type="checkbox"/>
+<div class="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all mt-0.5 peer-focus:ring-2 peer-focus:ring-primary/20">
+<svg class="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="3"></path></svg>
+</div>
+<div class="flex-1 min-w-0 peer-checked:line-through peer-checked:text-slate-400">
+<p class="text-base font-semibold text-slate-800 transition-colors truncate">עדכון סטטוס פרויקט גמא</p>
+<div class="flex items-center gap-3 mt-2 peer-checked:opacity-50">
+<span class="inline-flex items-center gap-1 bg-slate-100 text-slate-500 px-2 py-0.5 rounded-md text-[10px] font-bold">
+                                        הושלם
+                                    </span>
+<div class="flex items-center text-slate-400 text-xs">
+<span class="material-symbols-outlined mr-1" style="font-size: 14px;">check</span>
+                                        09:15
+                                    </div>
+</div>
+</div>
+</label>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button (FAB) -->
+<div class="fixed left-6 bottom-24 z-30">
+<button class="h-14 w-14 rounded-full bg-primary text-white shadow-float hover:scale-105 active:scale-95 transition-all duration-300 flex items-center justify-center group relative overflow-hidden">
+<div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+<span class="material-symbols-outlined" style="font-size: 32px;">add</span>
+</button>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 w-full glass-nav z-40 pb-5 pt-3 px-6">
+<div class="flex justify-between items-end">
+<a class="flex flex-col items-center gap-1 group w-1/4" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 26px;">dashboard</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">לוח בקרה</span>
+</a>
+<a class="flex flex-col items-center gap-1 group w-1/4" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 26px;">group</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">אנשי קשר</span>
+</a>
+<a class="flex flex-col items-center gap-1 group w-1/4 relative" href="#">
+<!-- Active Indicator dot -->
+<span class="absolute -top-1 w-1 h-1 bg-primary rounded-full"></span>
+<span class="material-symbols-outlined text-primary" style="font-size: 26px; font-variation-settings: 'FILL' 1;">check_box</span>
+<span class="text-[10px] font-bold text-primary">משימות</span>
+</a>
+<a class="flex flex-col items-center gap-1 group w-1/4" href="#">
+<span class="material-symbols-outlined text-slate-400 group-hover:text-primary transition-colors" style="font-size: 26px;">settings</span>
+<span class="text-[10px] font-medium text-slate-400 group-hover:text-primary transition-colors">הגדרות</span>
+</a>
+</div>
+</nav>
+</div>
+</body></html>

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="he"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Executive Premium CRM Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200..800&amp;family=Rubik:wght@300..700&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3c83f6",
+                        "background-light": "#f5f7f8",
+                        "background-dark": "#101722",
+                    },
+                    fontFamily: {
+                        "display": ["Rubik", "Manrope", "sans-serif"],
+                    },
+                    borderRadius: {
+                        "DEFAULT": "1rem",
+                        "lg": "1.5rem",
+                        "xl": "2rem",
+                        "2xl": "2.5rem",
+                        "3xl": "3rem",
+                        "full": "9999px"
+                    },
+                    boxShadow: {
+                        "glass": "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+                        "glass-sm": "0 4px 16px 0 rgba(31, 38, 135, 0.05)",
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .glass-panel-dark {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        details > summary {
+            list-style: none;
+        }
+        details > summary::-webkit-details-marker {
+            display: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gradient-to-br from-[#e0f2fe] to-[#bfdbfe] min-h-screen font-display text-slate-900 antialiased selection:bg-primary/30">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden mx-auto max-w-md shadow-2xl bg-gradient-to-br from-[#e0f2fe] via-[#dbeafe] to-[#bfdbfe]">
+<header class="pt-8 pb-2 px-6">
+<div class="flex items-center justify-between mb-6">
+<div class="flex items-center gap-3">
+<div class="relative h-12 w-12 overflow-hidden rounded-full ring-2 ring-white/50 shadow-glass-sm">
+<img alt="User profile picture of a smiling man" class="h-full w-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDEIN9D3Xg8-F--VRPGpfHUvKB26zNuICZW3IfHEfpNl9s_ULGhQfteKgPWe4YfB67w6CpqflUE1boHxXZHgz5qZjslmzBHSAwXXt3UdaxdCU9zfVzaRdkMgd_THC7i2VTaPUlfU8-B5SXbj2LLdfxDjzCbE1n7X0GXr3_NbEuvjjWDf3hJFTe6fFwHKKgyvyQXXqd2Fq4O8Du0r_Hyp0aiPDuc51cMOp300ptVS-Ou-cXY3JjMTYIZ2PZh5SRz2w69qIRYUlm2veQ"/>
+</div>
+<div>
+<p class="text-sm font-medium text-slate-500">בוקר טוב,</p>
+<h1 class="text-2xl font-bold text-slate-900 leading-none">מורדי 👋</h1>
+</div>
+</div>
+<button class="glass-panel h-10 w-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-white/80 transition-colors">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+</div>
+<div class="glass-panel-dark rounded-2xl p-6 shadow-glass relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-400/10 blur-2xl group-hover:bg-blue-400/20 transition-all"></div>
+<div class="relative z-10">
+<p class="text-slate-500 text-sm font-medium mb-1">שווי פייפליין נוכחי</p>
+<h2 class="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">₪187,500</h2>
+<div class="flex items-center gap-2">
+<span class="flex h-2 w-2 rounded-full bg-green-500 animate-pulse"></span>
+<p class="text-sm font-medium text-slate-600">4 עסקאות פעילות החודש</p>
+</div>
+</div>
+</div>
+</header>
+<section class="px-6 py-4 grid grid-cols-2 gap-3">
+<button class="glass-panel p-4 rounded-2xl flex flex-col justify-between text-right h-28 shadow-glass-sm hover:bg-white transition-all group">
+<div class="flex justify-between items-start">
+<div class="bg-primary/10 text-primary p-1.5 rounded-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">add</span>
+</div>
+<p class="text-[10px] font-bold text-primary bg-primary/5 px-2 py-0.5 rounded-full">חדש</p>
+</div>
+<div>
+<p class="text-slate-500 text-[11px] font-medium leading-tight">לידים חדשים</p>
+<p class="text-slate-900 text-xl font-bold">3</p>
+</div>
+</button>
+<button class="glass-panel p-4 rounded-2xl flex flex-col justify-between text-right h-28 shadow-glass-sm hover:bg-white transition-all group">
+<div class="flex justify-between items-start">
+<div class="bg-amber-100 text-amber-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">history</span>
+</div>
+<p class="text-[10px] font-bold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">ממתין</p>
+</div>
+<div>
+<p class="text-slate-500 text-[11px] font-medium leading-tight">פולו-אפים פתוחים</p>
+<p class="text-slate-900 text-xl font-bold">7</p>
+</div>
+</button>
+<button class="glass-panel p-4 rounded-2xl flex flex-col justify-between text-right h-28 shadow-glass-sm hover:bg-white transition-all group">
+<div class="flex justify-between items-start">
+<div class="bg-green-100 text-green-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">trending_up</span>
+</div>
+</div>
+<div>
+<p class="text-slate-500 text-[11px] font-medium leading-tight">עסקאות החודש</p>
+<p class="text-slate-900 text-xl font-bold">₪45,000</p>
+</div>
+</button>
+<button class="glass-panel p-4 rounded-2xl flex flex-col justify-between text-right h-28 shadow-glass-sm hover:bg-white transition-all group">
+<div class="flex justify-between items-start">
+<div class="bg-blue-100 text-blue-500 p-1.5 rounded-lg group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<div class="flex -space-x-1.5 rtl:space-x-reverse">
+<div class="w-5 h-5 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+<img class="object-cover h-full w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDdyaxN4-zlkSQMdxF3efNx5vgrJ-CYC8G0okMLF_KE2QfOCEywdPzmCEff77tNsVJyUwPmIbo4FVUFj-vSy9F0EWbYXXKs-KyvAnobjn63Z4MySl1aeJArsJ4XjKbzmUtyWMICTUOugNQTFSJOX6wSaysJPnPSnGdHebO5RD5n9d7VY6mZCF-fB_ZVI9cYSdawEnz0RJmSk0H2P0sNVy86DC4OHPUrtqcbeAkCSCPiBsGVVi0ciibf2VdRRj03dK0rNh1KKNjuME"/>
+</div>
+<div class="w-5 h-5 rounded-full border-2 border-white bg-slate-200 overflow-hidden">
+<img class="object-cover h-full w-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1NQeqnBJ4hPSp3edXSMOGKPT4oPc2mgg96rnVv341KV-LaDXAg6tjYT641mF6he_S1rCCZdhjhlJYlm2oSNaCIOjvQ1qDfMdWjaT-ahF-iOpeQRJwLo-EH3MLk2nyl1fQiGeP8xpL7ZsSO61N8uKV9uSQaldxZ0y6TMjME9LW-t9117oJyPcutOJzFtcyWJ05EiBd7IaSev9V8ZOtLSTZffFsbwwPB83OnsM_1ysn7yJWtOPf5LbiHoNJ0SFUfDRXuKN6npyUigU"/>
+</div>
+</div>
+</div>
+<div>
+<p class="text-slate-500 text-[11px] font-medium leading-tight">וואטסאפ ושיחה</p>
+<p class="text-slate-900 text-xl font-bold">פעיל</p>
+</div>
+</button>
+</section>
+<section class="flex-1 rounded-t-[2.5rem] glass-panel-dark shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pt-6 pb-28 px-6 mt-2">
+<div class="flex items-center justify-between mb-5">
+<h3 class="text-lg font-bold text-slate-800">פייפליין פעיל</h3>
+<a class="text-primary text-sm font-medium hover:text-blue-600 flex items-center gap-1" href="#">
+                    ראה הכל
+                    <span class="material-symbols-outlined text-[16px] rotate-180">arrow_right_alt</span>
+</a>
+</div>
+<div class="space-y-2">
+<details class="group bg-white/40 border border-white/60 rounded-2xl overflow-hidden" open="">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-blue-500"></span>
+<span class="font-bold text-sm text-slate-700">ליד חדש</span>
+<span class="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">1 עסקה</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="px-3 pb-3 space-y-2">
+<div class="bg-white/80 p-3 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-2">
+<img alt="Sarah" class="h-8 w-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCDdyaxN4-zlkSQMdxF3efNx5vgrJ-CYC8G0okMLF_KE2QfOCEywdPzmCEff77tNsVJyUwPmIbo4FVUFj-vSy9F0EWbYXXKs-KyvAnobjn63Z4MySl1aeJArsJ4XjKbzmUtyWMICTUOugNQTFSJOX6wSaysJPnPSnGdHebO5RD5n9d7VY6mZCF-fB_ZVI9cYSdawEnz0RJmSk0H2P0sNVy86DC4OHPUrtqcbeAkCSCPiBsGVVi0ciibf2VdRRj03dK0rNh1KKNjuME"/>
+<div>
+<h4 class="text-slate-900 font-bold text-xs">שרה כהן</h4>
+<p class="text-[10px] text-slate-500">דיגיטל סולושנס</p>
+</div>
+</div>
+<div class="text-left">
+<p class="text-slate-900 font-bold text-xs">₪12,000</p>
+<p class="text-[9px] text-red-500 font-medium">⚠️ 8 ימים</p>
+</div>
+</div>
+</div>
+</details>
+<details class="group bg-white/40 border border-white/60 rounded-2xl overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span>
+<span class="font-bold text-sm text-slate-700">גילוי צרכים</span>
+<span class="text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">0 עסקאות</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="px-4 pb-4 text-xs text-slate-400 text-center">אין עסקאות בשלב זה</div>
+</details>
+<details class="group bg-white/40 border border-white/60 rounded-2xl overflow-hidden" open="">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-amber-500"></span>
+<span class="font-bold text-sm text-slate-700">הצעת מחיר</span>
+<span class="text-[10px] bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full">2 עסקאות</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="px-3 pb-3 space-y-2">
+<div class="bg-white/80 p-3 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-2">
+<div class="h-8 w-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-[10px] font-bold">ד</div>
+<div>
+<h4 class="text-slate-900 font-bold text-xs">דניאל לוי</h4>
+<p class="text-[10px] text-slate-500">סטארט-אפ ניישן</p>
+</div>
+</div>
+<div class="text-left">
+<p class="text-slate-900 font-bold text-xs">₪8,500</p>
+<p class="text-[9px] text-green-600 font-medium">היום</p>
+</div>
+</div>
+<div class="bg-white/80 p-3 rounded-xl flex items-center justify-between shadow-sm">
+<div class="flex items-center gap-2">
+<img alt="Yossi" class="h-8 w-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB1NQeqnBJ4hPSp3edXSMOGKPT4oPc2mgg96rnVv341KV-LaDXAg6tjYT641mF6he_S1rCCZdhjhlJYlm2oSNaCIOjvQ1qDfMdWjaT-ahF-iOpeQRJwLo-EH3MLk2nyl1fQiGeP8xpL7ZsSO61N8uKV9uSQaldxZ0y6TMjME9LW-t9117oJyPcutOJzFtcyWJ05EiBd7IaSev9V8ZOtLSTZffFsbwwPB83OnsM_1ysn7yJWtOPf5LbiHoNJ0SFUfDRXuKN6npyUigU"/>
+<div>
+<h4 class="text-slate-900 font-bold text-xs">יוסי מזרחי</h4>
+<p class="text-[10px] text-slate-500">רהיטי יוקרה</p>
+</div>
+</div>
+<div class="text-left">
+<p class="text-slate-900 font-bold text-xs">₪24,000</p>
+<p class="text-[9px] text-blue-500 font-medium">מחר</p>
+</div>
+</div>
+</div>
+</details>
+<details class="group bg-white/40 border border-white/60 rounded-2xl overflow-hidden">
+<summary class="flex items-center justify-between p-4 cursor-pointer hover:bg-white/60 transition-colors">
+<div class="flex items-center gap-3">
+<span class="w-2 h-2 rounded-full bg-green-500"></span>
+<span class="font-bold text-sm text-slate-700">משא ומתן</span>
+<span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">1 עסקה</span>
+</div>
+<span class="material-symbols-outlined text-slate-400 group-open:rotate-180 transition-transform">expand_more</span>
+</summary>
+<div class="px-4 pb-4 text-xs text-slate-400 text-center">הושלם בהצלחה</div>
+</details>
+</div>
+</section>
+<nav class="glass-nav fixed bottom-0 left-0 right-0 max-w-md mx-auto px-4 pb-6 pt-2 z-50 rounded-t-3xl">
+<div class="flex justify-around items-end">
+<a class="flex flex-col items-center gap-1 text-primary group" href="#">
+<div class="h-8 flex items-center justify-center transition-transform group-hover:-translate-y-1">
+<span class="material-symbols-outlined text-[26px]" style="font-variation-settings: 'FILL' 1;">home</span>
+</div>
+<span class="text-[10px] font-bold">בית</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors group" href="#">
+<div class="h-8 flex items-center justify-center transition-transform group-hover:-translate-y-1">
+<span class="material-symbols-outlined text-[26px]">view_kanban</span>
+</div>
+<span class="text-[10px] font-medium">פייפליין</span>
+</a>
+<div class="relative -top-5">
+<button class="bg-primary text-white h-14 w-14 rounded-full shadow-lg shadow-blue-500/40 flex items-center justify-center hover:scale-105 transition-transform border-4 border-[#e6f1fe]">
+<span class="material-symbols-outlined text-[28px]">add</span>
+</button>
+</div>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors group" href="#">
+<div class="h-8 flex items-center justify-center transition-transform group-hover:-translate-y-1">
+<span class="material-symbols-outlined text-[26px]">groups</span>
+</div>
+<span class="text-[10px] font-medium">אנשי קשר</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-slate-400 hover:text-primary transition-colors group" href="#">
+<div class="h-8 flex items-center justify-center transition-transform group-hover:-translate-y-1">
+<span class="material-symbols-outlined text-[26px]">check_box</span>
+</div>
+<span class="text-[10px] font-medium">משימות</span>
+</a>
+</div>
+</nav>
+</div>
+
+</body></html>
