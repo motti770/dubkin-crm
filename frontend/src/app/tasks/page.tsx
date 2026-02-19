@@ -135,7 +135,7 @@ export default function TasksPage() {
               <span className="text-primary font-bold text-sm">מ</span>
             </div>
             <div className="flex flex-col">
-              <span className="text-xs font-medium text-slate-500">{getGreeting()}</span>
+              <span className="text-xs font-medium text-slate-500" suppressHydrationWarning>{getGreeting()}</span>
               <span className="text-sm font-bold text-slate-800">מוטי דובקין</span>
             </div>
           </div>
@@ -145,7 +145,7 @@ export default function TasksPage() {
         </div>
 
         <div className="flex flex-col gap-1">
-          <h2 className="text-sm font-medium text-primary uppercase tracking-wide opacity-80">{getHebrewDate()}</h2>
+          <h2 className="text-sm font-medium text-primary uppercase tracking-wide opacity-80" suppressHydrationWarning>{getHebrewDate()}</h2>
           <h1 className="text-3xl font-extrabold text-slate-900 leading-tight">משימות להיום</h1>
         </div>
 

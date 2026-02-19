@@ -45,7 +45,7 @@ export default function DashboardPage() {
               <span className="text-primary font-bold text-lg">מ</span>
             </div>
             <div>
-              <p className="text-sm font-medium text-slate-500">{getGreeting()}</p>
+              <p className="text-sm font-medium text-slate-500" suppressHydrationWarning>{getGreeting()}</p>
               <h1 className="text-2xl font-bold text-slate-900 leading-none">מוטי 👋</h1>
             </div>
           </div>
@@ -103,10 +103,10 @@ export default function DashboardPage() {
       </section>
 
       {/* KPI Cards — horizontal scroll on mobile, grid on desktop */}
-      <section className="px-2 md:px-0 pb-6">
-        <div className="grid grid-cols-3 gap-4">
+      <section className="pb-6">
+        <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x px-2 md:px-0 md:grid md:grid-cols-3 md:gap-4">
           {/* Card 1 */}
-          <div className="glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up" style={{ animationDelay: '0ms' }}>
+          <div className="min-w-[160px] md:min-w-0 snap-start glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up shrink-0 md:shrink" style={{ animationDelay: '0ms' }}>
             <div className="flex justify-between items-start">
               <div className="bg-green-100 p-1.5 rounded-full text-green-600">
                 <span className="material-symbols-outlined text-[18px]">trending_up</span>
@@ -120,7 +120,7 @@ export default function DashboardPage() {
             </div>
           </div>
           {/* Card 2 */}
-          <div className="glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up" style={{ animationDelay: '60ms' }}>
+          <div className="min-w-[160px] md:min-w-0 snap-start glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up shrink-0 md:shrink" style={{ animationDelay: '60ms' }}>
             <div className="flex justify-between items-start">
               <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
                 <span className="material-symbols-outlined text-[18px]">priority_high</span>
@@ -132,7 +132,7 @@ export default function DashboardPage() {
             </div>
           </div>
           {/* Card 3 */}
-          <div className="glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up" style={{ animationDelay: '120ms' }}>
+          <div className="min-w-[160px] md:min-w-0 snap-start glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up shrink-0 md:shrink" style={{ animationDelay: '120ms' }}>
             <div className="flex justify-between items-start">
               <div className="bg-blue-100 p-1.5 rounded-full text-blue-600">
                 <span className="material-symbols-outlined text-[18px]">bolt</span>
@@ -188,9 +188,9 @@ export default function DashboardPage() {
 
         {/* Deals List */}
         {dl ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2 md:grid md:grid-cols-2 lg:grid-cols-3">
             {[1, 2, 3].map(i => (
-              <div key={i} className="bg-white/50 border border-white/60 p-3 rounded-2xl h-20 animate-pulse" />
+              <div key={i} className="min-w-[280px] md:min-w-0 snap-start bg-white/50 border border-white/60 p-4 rounded-2xl h-20 animate-pulse shrink-0 md:shrink" />
             ))}
           </div>
         ) : filteredDeals.length === 0 ? (
@@ -199,12 +199,12 @@ export default function DashboardPage() {
             <p className="text-slate-400 text-sm">אין עסקאות להצגה</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2 md:grid md:grid-cols-2 lg:grid-cols-3">
             {filteredDeals.slice(0, 12).map((deal, idx) => (
               <Link
                 key={deal.id}
                 href={`/deals/${deal.id}`}
-                className="bg-white/50 border border-white/60 p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] fade-in-up"
+                className="min-w-[280px] md:min-w-0 snap-start shrink-0 md:shrink bg-white/50 border border-white/60 p-4 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] fade-in-up"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-lg font-bold border border-white shrink-0">
@@ -216,7 +216,7 @@ export default function DashboardPage() {
                       {deal.contact_name || deal.name || deal.title || ''}
                     </h4>
                     {deal.value ? (
-                      <span className="text-slate-900 font-bold text-sm">
+                      <span className="text-slate-900 font-bold text-sm shrink-0 mr-2">
                         {formatCurrency(Number(deal.value))}
                       </span>
                     ) : null}

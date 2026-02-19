@@ -120,6 +120,7 @@ export const contactsApi = {
     fetchApi<{ data: Contact[]; total: number }>(
       `/contacts${search ? `?search=${encodeURIComponent(search)}` : ''}`
     ),
+  get: (id: number) => fetchApi<Contact>(`/contacts/${id}`),
   create: (data: Partial<Contact>) =>
     fetchApi<Contact>('/contacts', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: Partial<Contact>) =>
