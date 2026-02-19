@@ -10,8 +10,8 @@ const bcrypt    = require('bcryptjs');
 const pool = new Pool({ connectionString: process.env.DATABASE_URL });
 
 const ADMINS = [
-  { name: 'מורדי דובקין',    email: 'mordi@dubkin.com',  password: process.env.MORDI_PASSWORD  || 'Change-Me-Mordi!1' },
-  { name: 'שלמה',             email: 'shlomo@dubkin.com', password: process.env.SHLOMO_PASSWORD || 'Change-Me-Shlomo!1' },
+  { name: 'מורדי דובקין',    email: 'mordi@dobkin.com',  password: process.env.MORDI_PASSWORD  || 'Change-Me-Mordi!1' },
+  { name: 'שלמה',             email: 'shlomo@dobkin.com', password: process.env.SHLOMO_PASSWORD || 'Change-Me-Shlomo!1' },
 ];
 
 async function run() {

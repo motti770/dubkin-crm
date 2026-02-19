@@ -85,7 +85,7 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-10">
           <div className="text-5xl font-black text-white tracking-tight mb-1">
-            Dubkin<span className="text-blue-500">.</span>
+            Dobkin<span className="text-blue-500">.</span>
           </div>
           <p className="text-gray-500 text-sm">כניסה לפלטפורמה</p>
         </div>

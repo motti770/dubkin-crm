@@ -55,7 +55,7 @@ app.use((err, _req, res, _next) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`🚀 Dubkin CRM API running on port ${PORT}`);
+  console.log(`🚀 Dobkin CRM API running on port ${PORT}`);
   console.log(`🔐 Auth required for all routes (except /health, /auth/login)`);
 });
 

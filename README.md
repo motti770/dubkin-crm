@@ -1,6 +1,6 @@
-# Dubkin CRM 🚀
+# Dobkin CRM 🚀
 
-**CRM Backend for Motti Dubkin — Technology Partner for Growing Businesses**
+**CRM Backend for Motti Dobkin — Technology Partner for Growing Businesses**
 
 > מוכר אוטומציות, WhatsApp בוטים, ניהול פרויקטים גדולים.
 

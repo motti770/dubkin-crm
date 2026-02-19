@@ -34,7 +34,7 @@ function Sidebar() {
       <div className="flex items-center justify-between px-4 py-5 border-b border-white/05">
         {!collapsed && (
           <div>
-            <div className="text-base font-black text-white">Dubkin<span className="text-blue-400">.</span></div>
+            <div className="text-base font-black text-white">Dobkin<span className="text-blue-400">.</span></div>
             <div className="text-[10px] text-white/30 uppercase tracking-widest">CRM</div>
           </div>
         )}
@@ -167,7 +167,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="Dubkin CRM" />
+        <meta name="apple-mobile-web-app-title" content="Dobkin CRM" />
       </head>
       <body>
         <QueryClientProvider client={queryClient}>

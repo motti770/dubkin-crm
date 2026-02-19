@@ -1,5 +1,5 @@
 -- ============================================================
--- Dubkin CRM — PostgreSQL Schema
+-- Dobkin CRM — PostgreSQL Schema
 -- Technology Partner for Growing Businesses
 -- ============================================================
 
