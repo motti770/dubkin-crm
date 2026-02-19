@@ -2,84 +2,73 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  DndContext,
-  DragEndEvent,
-  DragOverEvent,
-  DragOverlay,
-  DragStartEvent,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  closestCorners,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  useSortable,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { pipelineApi, dealsApi, Deal } from '@/lib/api';
-import { formatCurrency, formatDate } from '@/lib/utils';
-import { GripVertical, DollarSign } from 'lucide-react';
+import { formatCurrency } from '@/lib/utils';
 
 const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
 
-const STAGE_ACCENT: Record<string, { header: string; bubble: string; gradient: string }> = {
-  'צינון':       { header: 'text-slate-300',   bubble: 'bg-slate-500/30 text-slate-300',   gradient: 'from-slate-400/20 to-transparent' },
-  'אפיון':      { header: 'text-blue-400',    bubble: 'bg-blue-500/30 text-blue-300',     gradient: 'from-blue-400/20 to-transparent' },
-  'מחירה':      { header: 'text-amber-400',   bubble: 'bg-amber-500/30 text-amber-300',   gradient: 'from-amber-400/20 to-transparent' },
-  'סגירה':      { header: 'text-purple-400',  bubble: 'bg-purple-500/30 text-purple-300', gradient: 'from-purple-400/20 to-transparent' },
-  'לקוח פעיל':  { header: 'text-emerald-400', bubble: 'bg-emerald-500/30 text-emerald-300', gradient: 'from-emerald-400/20 to-transparent' },
-  'ארכיון':     { header: 'text-gray-400',    bubble: 'bg-gray-500/30 text-gray-300',     gradient: 'from-gray-400/20 to-transparent' },
+const STAGE_COLORS: Record<string, { bg: string; text: string; dot: string; headerBg: string }> = {
+  'צינון':       { bg: 'bg-slate-50',   text: 'text-slate-700',   dot: 'bg-slate-400',   headerBg: 'bg-slate-100' },
+  'אפיון':      { bg: 'bg-blue-50',    text: 'text-blue-700',    dot: 'bg-blue-500',    headerBg: 'bg-blue-100' },
+  'מחירה':      { bg: 'bg-amber-50',   text: 'text-amber-700',   dot: 'bg-amber-500',   headerBg: 'bg-amber-100' },
+  'סגירה':      { bg: 'bg-purple-50',  text: 'text-purple-700',  dot: 'bg-purple-500',  headerBg: 'bg-purple-100' },
+  'לקוח פעיל':  { bg: 'bg-emerald-50', text: 'text-emerald-700', dot: 'bg-emerald-500', headerBg: 'bg-emerald-100' },
+  'ארכיון':     { bg: 'bg-gray-50',    text: 'text-gray-600',    dot: 'bg-gray-400',    headerBg: 'bg-gray-100' },
 };
 
-function DealCard({ deal, isDragging }: { deal: Deal; isDragging?: boolean }) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: `deal-${deal.id}`,
-    data: { type: 'deal', deal },
-  });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
+function DealCard({
+  deal,
+  onMoveStage,
+  isPending,
+}: {
+  deal: Deal;
+  onMoveStage: (dealId: number, stage: string) => void;
+  isPending: boolean;
+}) {
+  const [showActions, setShowActions] = useState(false);
 
   return (
-    <div
-      ref={setNodeRef}
-      style={{
-        ...style,
-        background: 'rgba(0,0,0,0.2)',
-        borderColor: 'rgba(255,255,255,0.1)',
-      }}
-      className={[
-        'rounded-xl p-3 cursor-grab active:cursor-grabbing select-none',
-        'border backdrop-blur-md transition-all duration-200',
-        'hover:border-white/20 hover:bg-black/30',
-        isDragging ? 'opacity-40' : '',
-      ].join(' ')}
-      {...attributes}
-      {...listeners}
-    >
-      <div className="flex items-start justify-between gap-2">
+    <div className="bg-white/80 p-3 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-white/60">
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-sm font-bold border border-white shrink-0">
+          {(deal.contact_name || deal.title).charAt(0)}
+        </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-white/90 truncate">{deal.title}</p>
-          {deal.contact_name && (
-            <p className="text-xs text-white/50 mt-0.5 truncate">{deal.contact_name}</p>
-          )}
+          <h4 className="text-slate-900 font-bold text-sm truncate">{deal.contact_name || deal.title}</h4>
+          <p className="text-slate-500 text-xs truncate">{deal.title}</p>
         </div>
-        <GripVertical size={14} className="text-white/20 shrink-0 mt-0.5" />
+        {deal.value ? (
+          <span className="text-slate-900 font-bold text-sm shrink-0">{formatCurrency(deal.value)}</span>
+        ) : null}
       </div>
-      {deal.value ? (
-        <div className="mt-2 flex items-center gap-1">
-          <DollarSign size={11} className="text-emerald-400" />
-          <span className="text-xs font-semibold text-emerald-400">{formatCurrency(deal.value)}</span>
+
+      {/* Move actions */}
+      <div className="mt-2 flex items-center justify-between">
+        <button
+          onClick={() => setShowActions(!showActions)}
+          className="text-[10px] text-primary font-medium hover:underline"
+        >
+          {showActions ? 'סגור' : 'העבר שלב'}
+        </button>
+      </div>
+
+      {showActions && (
+        <div className="mt-2 flex gap-1 flex-wrap">
+          {STAGES.filter(s => s !== deal.stage).map(stage => {
+            const c = STAGE_COLORS[stage] || STAGE_COLORS['ארכיון'];
+            return (
+              <button
+                key={stage}
+                onClick={() => onMoveStage(deal.id, stage)}
+                disabled={isPending}
+                className={`text-[10px] px-2 py-1 rounded-full ${c.headerBg} ${c.text} font-medium hover:opacity-80 transition-opacity disabled:opacity-40`}
+              >
+                {stage}
+              </button>
+            );
+          })}
         </div>
-      ) : null}
-      <div className="mt-2 text-xs text-white/40">
-        {formatDate(deal.created_at)}
-      </div>
+      )}
     </div>
   );
 }
@@ -87,73 +76,52 @@ function DealCard({ deal, isDragging }: { deal: Deal; isDragging?: boolean }) {
 function StageColumn({
   stage,
   deals,
-  activeId,
+  onMoveStage,
+  isPending,
 }: {
   stage: string;
   deals: Deal[];
-  activeId: string | null;
+  onMoveStage: (dealId: number, stage: string) => void;
+  isPending: boolean;
 }) {
   const totalValue = deals.reduce((sum, d) => sum + (d.value || 0), 0);
-  const accent = STAGE_ACCENT[stage];
+  const c = STAGE_COLORS[stage] || STAGE_COLORS['ארכיון'];
 
   return (
-    <div
-      className={[
-        'flex flex-col rounded-2xl p-3 min-w-[270px] max-w-[290px]',
-        'border backdrop-blur-xl',
-      ].join(' ')}
-      style={{
-        minHeight: 420,
-        background: 'rgba(255,255,255,0.06)',
-        borderColor: 'rgba(255,255,255,0.12)',
-      }}
-    >
-      {/* Column header with gradient */}
-      <div className={`bg-gradient-to-b ${accent.gradient} rounded-xl px-3 py-2.5 mb-3`}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className={`text-sm font-bold ${accent.header}`}>{stage}</h3>
-            {totalValue > 0 && (
-              <p className="text-xs text-white/40 mt-0.5">{formatCurrency(totalValue)}</p>
-            )}
-          </div>
-          <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 ${accent.bubble}`}>
+    <div className="glass-panel rounded-2xl min-w-[280px] max-w-[300px] flex flex-col shadow-glass">
+      {/* Header */}
+      <div className={`${c.headerBg} rounded-t-2xl px-4 py-3 flex items-center justify-between`}>
+        <div className="flex items-center gap-2">
+          <span className={`h-2.5 w-2.5 rounded-full ${c.dot}`} />
+          <h3 className={`text-sm font-bold ${c.text}`}>{stage}</h3>
+        </div>
+        <div className="flex items-center gap-2">
+          {totalValue > 0 && (
+            <span className="text-[10px] text-slate-500">{formatCurrency(totalValue)}</span>
+          )}
+          <span className={`text-xs font-bold ${c.text} ${c.headerBg} px-2 py-0.5 rounded-full`}>
             {deals.length}
           </span>
         </div>
       </div>
 
-      {/* Drop zone */}
-      <SortableContext
-        items={deals.map(d => `deal-${d.id}`)}
-        strategy={verticalListSortingStrategy}
-      >
-        <div className="flex flex-col gap-2 flex-1">
-          {deals.map(deal => (
-            <DealCard
-              key={deal.id}
-              deal={deal}
-              isDragging={activeId === `deal-${deal.id}`}
-            />
-          ))}
-          {deals.length === 0 && (
-            <div
-              className="flex-1 flex items-center justify-center rounded-xl min-h-[100px]"
-              style={{ border: '2px dashed rgba(255,255,255,0.15)' }}
-            >
-              <p className="text-xs text-white/30">גרור עסקה לכאן</p>
-            </div>
-          )}
-        </div>
-      </SortableContext>
+      {/* Cards */}
+      <div className="p-3 flex flex-col gap-2 flex-1 min-h-[200px]">
+        {deals.map(deal => (
+          <DealCard key={deal.id} deal={deal} onMoveStage={onMoveStage} isPending={isPending} />
+        ))}
+        {deals.length === 0 && (
+          <div className="flex-1 flex items-center justify-center rounded-xl min-h-[100px] border-2 border-dashed border-slate-200">
+            <p className="text-xs text-slate-400">אין עסקאות</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
 
 export default function PipelinePage() {
   const qc = useQueryClient();
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [activeDeal, setActiveDeal] = useState<Deal | null>(null);
 
   const { data: pipeline, isLoading } = useQuery({
     queryKey: ['pipeline'],
@@ -169,7 +137,6 @@ export default function PipelinePage() {
     },
   });
 
-  // Build stage map from pipeline data
   const stageMap: Record<string, Deal[]> = {};
   STAGES.forEach(s => { stageMap[s] = []; });
   if (pipeline) {
@@ -178,126 +145,36 @@ export default function PipelinePage() {
     });
   }
 
-  const sensors = useSensors(
-    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
-  );
-
-  const handleDragStart = (event: DragStartEvent) => {
-    const { active } = event;
-    setActiveId(active.id as string);
-    const deal = active.data.current?.deal as Deal;
-    setActiveDeal(deal || null);
+  const handleMoveStage = (dealId: number, stage: string) => {
+    updateStageMutation.mutate({ id: dealId, stage });
   };
-
-  const handleDragEnd = (event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveId(null);
-    setActiveDeal(null);
-
-    if (!over) return;
-
-    const dealId = parseInt((active.id as string).replace('deal-', ''));
-    const overId = over.id as string;
-
-    // Determine target stage
-    let targetStage: string | null = null;
-
-    if (overId.startsWith('stage-')) {
-      targetStage = overId.replace('stage-', '');
-    } else if (overId.startsWith('deal-')) {
-      // Find which stage contains the target deal
-      const targetDealId = parseInt(overId.replace('deal-', ''));
-      for (const [stage, deals] of Object.entries(stageMap)) {
-        if (deals.find(d => d.id === targetDealId)) {
-          targetStage = stage;
-          break;
-        }
-      }
-    }
-
-    if (!targetStage) return;
-
-    // Find current stage of the dragged deal
-    let currentStage: string | null = null;
-    for (const [stage, deals] of Object.entries(stageMap)) {
-      if (deals.find(d => d.id === dealId)) {
-        currentStage = stage;
-        break;
-      }
-    }
-
-    if (currentStage === targetStage) return;
-
-    updateStageMutation.mutate({ id: dealId, stage: targetStage });
-  };
-
-  const handleDragOver = (event: DragOverEvent) => {
-    // Handled by dnd-kit automatically
-  };
-
-  if (isLoading) {
-    return (
-      <div className="relative z-10 p-6">
-        <h1 className="text-2xl font-bold text-white mb-6">פייפליין</h1>
-        <div className="flex gap-4 overflow-x-auto pb-4">
-          {STAGES.map(s => (
-            <div
-              key={s}
-              className="min-w-[270px] h-96 rounded-2xl backdrop-blur-xl animate-pulse"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
 
   return (
-    <div className="relative z-10 p-6">
+    <div className="pt-8 px-6 pb-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">פייפליין</h1>
-        <p className="text-white/50 text-sm mt-1">גרור עסקאות בין השלבים</p>
+        <h1 className="text-2xl font-bold text-slate-900">פייפליין</h1>
+        <p className="text-slate-500 text-sm mt-1">ניהול שלבי העסקאות</p>
       </div>
 
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCorners}
-        onDragStart={handleDragStart}
-        onDragEnd={handleDragEnd}
-        onDragOver={handleDragOver}
-      >
-        <div className="flex gap-4 overflow-x-auto pb-6">
+      {isLoading ? (
+        <div className="flex gap-4 overflow-x-auto pb-4 no-scrollbar">
+          {STAGES.map(s => (
+            <div key={s} className="min-w-[280px] h-80 rounded-2xl glass-panel animate-pulse" />
+          ))}
+        </div>
+      ) : (
+        <div className="flex gap-4 overflow-x-auto pb-6 no-scrollbar">
           {STAGES.map(stage => (
             <StageColumn
               key={stage}
               stage={stage}
               deals={stageMap[stage] || []}
-              activeId={activeId}
+              onMoveStage={handleMoveStage}
+              isPending={updateStageMutation.isPending}
             />
           ))}
         </div>
-
-        <DragOverlay>
-          {activeDeal ? (
-            <div
-              className="rounded-xl p-3 shadow-2xl w-[260px] backdrop-blur-xl"
-              style={{
-                background: 'rgba(0,0,0,0.4)',
-                border: '2px solid rgba(59,130,246,0.6)',
-                boxShadow: '0 0 20px rgba(59,130,246,0.3), 0 0 60px rgba(59,130,246,0.1)',
-              }}
-            >
-              <p className="text-sm font-medium text-white">{activeDeal.title}</p>
-              {activeDeal.contact_name && (
-                <p className="text-xs text-white/50">{activeDeal.contact_name}</p>
-              )}
-              {activeDeal.value ? (
-                <p className="text-xs text-emerald-400 mt-1">{formatCurrency(activeDeal.value)}</p>
-              ) : null}
-            </div>
-          ) : null}
-        </DragOverlay>
-      </DndContext>
+      )}
     </div>
   );
 }

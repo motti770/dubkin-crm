@@ -10,15 +10,13 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        primary: "#3c83f6",
+        "background-light": "#f5f7f8",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
-        primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-        },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -44,10 +42,22 @@ const config: Config = {
           foreground: "hsl(var(--card-foreground))",
         },
       },
+      fontFamily: {
+        display: ["Rubik", "Manrope", "sans-serif"],
+      },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        DEFAULT: "1rem",
+        lg: "1.5rem",
+        xl: "2rem",
+        "2xl": "2.5rem",
+        "3xl": "3rem",
+        sm: "0.5rem",
+        md: "0.75rem",
+      },
+      boxShadow: {
+        glass: "0 8px 32px 0 rgba(31, 38, 135, 0.07)",
+        "glass-sm": "0 4px 16px 0 rgba(31, 38, 135, 0.05)",
+        float: "0 10px 40px -10px rgba(60, 131, 246, 0.3)",
       },
     },
   },
