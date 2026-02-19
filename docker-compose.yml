@@ -6,7 +6,7 @@ services:
     container_name: dobkin-crm-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: dobkin_crm
+      POSTGRES_DB: dubkin_crm
       POSTGRES_USER: crm_user
       POSTGRES_PASSWORD: changeme
     volumes:
@@ -15,7 +15,7 @@ services:
     networks:
       - crm-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U crm_user -d dobkin_crm"]
+      test: ["CMD-SHELL", "pg_isready -U crm_user -d dubkin_crm"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -33,7 +33,7 @@ services:
     environment:
       DB_HOST: crm-db
       DB_PORT: 5432
-      DB_NAME: dobkin_crm
+      DB_NAME: dubkin_crm
       DB_USER: crm_user
       DB_PASSWORD: changeme
       PORT: 3001
