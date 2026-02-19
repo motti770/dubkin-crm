@@ -97,7 +97,7 @@ function NewLeadModal({ open, onClose }: { open: boolean; onClose: () => void })
       />
       {/* Bottom Sheet */}
       <div
-        className={`fixed bottom-0 inset-x-0 z-50 bg-white/98 backdrop-blur-2xl rounded-t-3xl shadow-2xl border-t border-white/60 ${closing ? 'slide-down' : 'slide-up'}`}
+        className={`fixed bottom-0 inset-x-0 z-50 glass-sheet rounded-t-3xl shadow-2xl ${closing ? 'slide-down' : 'slide-up'}`}
         style={{ maxHeight: '92dvh' }}
       >
         {/* Scrollable content */}
