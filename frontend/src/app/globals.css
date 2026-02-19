@@ -2,56 +2,145 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ────────────────────────────────────────────────────────── */
 @layer base {
   :root {
-    --background: 222 47% 8%;
+    --background: 222 47% 8%;        /* slate-950 */
     --foreground: 213 31% 91%;
-    --card: 222 47% 11%;
+    --card: 222 47% 11%;             /* slate-900 */
     --card-foreground: 213 31% 91%;
     --popover: 222 47% 11%;
     --popover-foreground: 213 31% 91%;
-    --primary: 210 40% 56%;
-    --primary-foreground: 222 47% 8%;
-    --secondary: 222 47% 16%;
+    --primary: 217 91% 60%;          /* blue-500 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 222 47% 16%;        /* slate-800 */
     --secondary-foreground: 213 31% 91%;
     --muted: 222 47% 14%;
     --muted-foreground: 215 20% 55%;
-    --accent: 222 47% 16%;
-    --accent-foreground: 213 31% 91%;
-    --destructive: 0 63% 45%;
+    --accent: 217 91% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 63% 50%;
     --destructive-foreground: 213 31% 91%;
-    --border: 222 47% 18%;
+    --border: 222 47% 20%;
     --input: 222 47% 16%;
-    --ring: 210 40% 56%;
-    --radius: 0.5rem;
+    --ring: 217 91% 60%;
+    --radius: 0.75rem;               /* rounded-xl */
   }
 }
 
+/* ── Base reset ──────────────────────────────────────────────────────────── */
 @layer base {
   * {
     @apply border-border;
+    -webkit-tap-highlight-color: transparent;
   }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
     direction: rtl;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial Hebrew', Arial, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Arial Hebrew', Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overscroll-behavior: none;
+  }
+
+  /* Safe areas (iOS notch/home bar) */
+  body {
+    padding-bottom: env(safe-area-inset-bottom);
   }
 }
 
-/* RTL scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: hsl(var(--background));
-}
-::-webkit-scrollbar-thumb {
-  background: hsl(var(--border));
-  border-radius: 3px;
+/* ── Bottom Navigation ───────────────────────────────────────────────────── */
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  background: hsl(var(--card));
+  border-top: 1px solid hsl(var(--border));
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(64px + env(safe-area-inset-bottom));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-/* Kanban drag overlay */
-.dragging {
-  opacity: 0.5;
+@media (min-width: 768px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+.bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  color: hsl(var(--muted-foreground));
+  font-size: 10px;
+  font-weight: 500;
+  transition: color 0.15s, background 0.15s;
+  min-width: 56px;
+  min-height: 44px;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.bottom-nav-item.active {
+  color: hsl(var(--primary));
+}
+
+.bottom-nav-item:active {
+  background: hsl(var(--secondary));
+}
+
+/* ── Cards ───────────────────────────────────────────────────────────────── */
+.stat-card {
+  @apply rounded-2xl p-4 bg-card border border-border;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* ── Touch-friendly buttons ──────────────────────────────────────────────── */
+button, a[role="button"], [type="button"], [type="submit"] {
+  min-height: 36px;
+}
+
+.btn-primary {
+  @apply flex items-center justify-center gap-2 rounded-xl bg-blue-500 text-white font-semibold px-5 transition-all active:scale-95;
+  min-height: 48px;
+}
+
+.btn-primary:hover {
+  background: hsl(217, 91%, 55%);
+}
+
+/* ── Scrollbars (minimal) ─────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 4px; }
+
+/* ── Skeleton / loading ──────────────────────────────────────────────────── */
+.skeleton {
+  @apply rounded-xl bg-secondary/60 animate-pulse;
+}
+
+/* ── Kanban drag overlay ─────────────────────────────────────────────────── */
+.dragging { opacity: 0.5; }
+
+/* ── Pull-to-refresh indicator ───────────────────────────────────────────── */
+.refresh-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  color: hsl(var(--muted-foreground));
+  font-size: 13px;
 }
