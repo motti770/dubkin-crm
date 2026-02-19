@@ -38,6 +38,8 @@ services:
       DB_PASSWORD: changeme
       PORT: 3001
       NODE_ENV: production
+      JWT_SECRET: ${JWT_SECRET:-replace-with-strong-secret-in-production}
+      DATABASE_URL: postgres://crm_user:changeme@crm-db:5432/dubkin_crm
     ports:
       - "3001:3001"
     depends_on:

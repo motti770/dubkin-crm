@@ -110,6 +110,33 @@ CREATE INDEX IF NOT EXISTS idx_deals_contact     ON deals(contact_id);
 CREATE INDEX IF NOT EXISTS idx_activities_deal   ON activities(deal_id);
 CREATE INDEX IF NOT EXISTS idx_activities_contact ON activities(contact_id);
 
+-- Users (authentication + roles)
+CREATE TABLE IF NOT EXISTS users (
+  id           SERIAL PRIMARY KEY,
+  name         VARCHAR(200) NOT NULL,
+  email        VARCHAR(255) NOT NULL UNIQUE,
+  password     VARCHAR(255) NOT NULL,   -- bcrypt hash
+  role         VARCHAR(20)  NOT NULL DEFAULT 'client'
+                CHECK (role IN ('admin','client')),
+  contact_id   INTEGER REFERENCES contacts(id) ON DELETE SET NULL, -- for client role
+  is_active    BOOLEAN DEFAULT TRUE,
+  last_login   TIMESTAMPTZ,
+  created_at   TIMESTAMPTZ DEFAULT NOW(),
+  updated_at   TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+CREATE INDEX IF NOT EXISTS idx_users_role  ON users(role);
+
+-- Trigger updated_at for users
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'users_updated_at') THEN
+    CREATE TRIGGER users_updated_at BEFORE UPDATE ON users
+      FOR EACH ROW EXECUTE FUNCTION set_updated_at();
+  END IF;
+END $$;
+
 -- Follow-ups (the heart of the CRM!)
 CREATE TABLE IF NOT EXISTS follow_ups (
   id          SERIAL PRIMARY KEY,

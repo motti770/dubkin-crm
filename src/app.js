@@ -5,6 +5,9 @@ const cors     = require('cors');
 const helmet   = require('helmet');
 const morgan   = require('morgan');
 
+const { authenticate, adminOnly } = require('./middleware/auth');
+
+const authRouter       = require('./routes/auth');
 const contactsRouter   = require('./routes/contacts');
 const dealsRouter      = require('./routes/deals');
 const activitiesRouter = require('./routes/activities');
@@ -14,30 +17,38 @@ const followUpsRouter  = require('./routes/follow-ups');
 const app  = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
+// ─── Middleware ───────────────────────────────────────────────────────────────
 app.use(helmet());
-app.use(cors());
+app.use(cors({
+  origin: process.env.ALLOWED_ORIGINS?.split(',') || '*',
+  credentials: true,
+}));
 app.use(morgan('dev'));
 app.use(express.json());
 
-// Health check
+// ─── Public routes ────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'dubkin-crm', timestamp: new Date() });
 });
 
-// Routes
-app.use('/contacts',   contactsRouter);
-app.use('/deals',      dealsRouter);
-app.use('/activities', activitiesRouter);
-app.use('/pipeline',    pipelineRouter);
-app.use('/follow-ups', followUpsRouter);
+app.use('/auth', authRouter);        // /auth/login  /auth/me  /auth/users …
 
-// 404
+// ─── Protected routes (JWT required) ─────────────────────────────────────────
+app.use(authenticate);               // Everything below requires a valid token
+
+// Admin-only — contacts / deals / activities / pipeline / follow-ups
+app.use('/contacts',   adminOnly, contactsRouter);
+app.use('/deals',      adminOnly, dealsRouter);
+app.use('/activities', adminOnly, activitiesRouter);
+app.use('/pipeline',   adminOnly, pipelineRouter);
+app.use('/follow-ups', adminOnly, followUpsRouter);
+
+// ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' });
 });
 
-// Error handler
+// ─── Error handler ────────────────────────────────────────────────────────────
 app.use((err, _req, res, _next) => {
   console.error(err);
   res.status(500).json({ error: 'Internal server error' });
@@ -45,6 +56,7 @@ app.use((err, _req, res, _next) => {
 
 app.listen(PORT, () => {
   console.log(`🚀 Dubkin CRM API running on port ${PORT}`);
+  console.log(`🔐 Auth required for all routes (except /health, /auth/login)`);
 });
 
 module.exports = app;
