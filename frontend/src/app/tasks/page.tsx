@@ -235,24 +235,44 @@ export default function TasksPage() {
 function TaskItem({ task, completed, onToggle, index }: { task: Task; completed: boolean; onToggle: () => void; index: number }) {
   const priority = getPriorityBadge(task.priority);
   const icon = getTypeIcon(task.type);
+  const [expanded, setExpanded] = useState(false);
+
+  const typeLabels: Record<string, string> = {
+    call: 'שיחה', email: 'אימייל', meeting: 'פגישה',
+    note: 'הערה', task: 'משימה', message: 'הודעה',
+  };
 
   return (
     <div
-      className={`glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-all duration-200 group hover:scale-[1.01] active:scale-[0.99] ${completed ? 'opacity-60' : ''} fade-in-up`}
+      className={`glass-card rounded-2xl shadow-glass transition-all duration-300 ${completed ? 'opacity-60' : ''} fade-in-up`}
       style={{ animationDelay: `${index * 40}ms` }}
     >
-      <label className="flex items-start gap-4 cursor-pointer checkbox-wrapper w-full">
-        <input type="checkbox" className="peer sr-only" checked={completed} onChange={onToggle} />
-        <div className="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all duration-200 mt-0.5 peer-focus:ring-2 peer-focus:ring-primary/20">
-          <svg className="w-3.5 h-3.5 text-white hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
-          </svg>
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className={`text-base font-semibold text-slate-800 group-hover:text-primary transition-colors duration-200 truncate ${completed ? 'line-through text-slate-400' : ''}`}>
+      {/* Main row */}
+      <div className="flex items-start gap-3 p-4">
+        {/* Checkbox */}
+        <label className="cursor-pointer mt-0.5 shrink-0">
+          <input type="checkbox" className="peer sr-only" checked={completed} onChange={onToggle} />
+          <div className="h-6 w-6 rounded-full border-2 border-slate-300 bg-white/50 flex items-center justify-center transition-all duration-200 peer-checked:bg-primary peer-checked:border-primary">
+            <svg className={`w-3.5 h-3.5 text-white ${completed ? '' : 'hidden'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" />
+            </svg>
+          </div>
+        </label>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0" onClick={() => setExpanded(v => !v)}>
+          <p className={`text-base font-semibold text-slate-800 leading-snug ${completed ? 'line-through text-slate-400' : ''}`}>
             {task.text}
           </p>
-          <div className="flex items-center gap-3 mt-2">
+          {/* Preview line when collapsed */}
+          {!expanded && (task.contactName || task.dealTitle) && (
+            <p className="text-xs text-slate-400 mt-0.5 truncate">
+              {task.contactName && <span>👤 {task.contactName}</span>}
+              {task.contactName && task.dealTitle && <span className="mx-1">·</span>}
+              {task.dealTitle && <span>💼 {task.dealTitle}</span>}
+            </p>
+          )}
+          <div className="flex items-center gap-2 mt-1.5">
             {!completed ? (
               <span className={`inline-flex items-center gap-1 ${priority.bg} ${priority.text} px-2 py-0.5 rounded-md text-[10px] font-bold`}>
                 <span className={`w-1.5 h-1.5 rounded-full ${priority.dot}`} />
@@ -267,7 +287,56 @@ function TaskItem({ task, completed, onToggle, index }: { task: Task; completed:
             </div>
           </div>
         </div>
-      </label>
+
+        {/* Expand chevron */}
+        <button
+          onClick={() => setExpanded(v => !v)}
+          className="shrink-0 h-7 w-7 rounded-full bg-slate-100/70 flex items-center justify-center text-slate-400 hover:bg-slate-200 transition-all duration-200 mt-0.5"
+        >
+          <span className="material-symbols-outlined text-[18px]" style={{ transition: 'transform 0.2s', transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+            expand_more
+          </span>
+        </button>
+      </div>
+
+      {/* Expanded details */}
+      {expanded && (
+        <div className="px-4 pb-4 border-t border-slate-100/60 pt-3 space-y-2">
+          {task.contactName && (
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 text-sm text-slate-700">
+                <span className="material-symbols-outlined text-[16px] text-slate-400">person</span>
+                <span className="font-medium">{task.contactName}</span>
+              </div>
+              <a
+                href={`https://wa.me/972${task.contactName}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={e => e.stopPropagation()}
+                className="flex items-center gap-1 bg-[#25D366]/10 text-[#25D366] text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-[#25D366]/20 transition-colors"
+              >
+                <span className="material-symbols-outlined text-[14px]">chat</span>
+                WhatsApp
+              </a>
+            </div>
+          )}
+          {task.dealTitle && (
+            <div className="flex items-center gap-2 text-sm text-slate-700">
+              <span className="material-symbols-outlined text-[16px] text-slate-400">handshake</span>
+              <span className="font-medium">{task.dealTitle}</span>
+            </div>
+          )}
+          {task.type && (
+            <div className="flex items-center gap-2 text-sm text-slate-500">
+              <span className="material-symbols-outlined text-[16px] text-slate-400">{icon}</span>
+              <span>{typeLabels[task.type] || task.type}</span>
+            </div>
+          )}
+          {!task.contactName && !task.dealTitle && !task.type && (
+            <p className="text-xs text-slate-400 italic">אין פרטים נוספים</p>
+          )}
+        </div>
+      )}
     </div>
   );
 }
