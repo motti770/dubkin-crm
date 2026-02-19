@@ -225,7 +225,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
           <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
         </button>
         <div className="flex-1">
-          <h1 className="text-xl font-extrabold text-slate-900">{deal.title}</h1>
+          <h1 className="text-xl font-extrabold text-slate-900">{(deal.name || deal.title || "")}</h1>
           {deal.contact_name && (
             <p className="text-sm text-slate-500">{deal.contact_name}</p>
           )}
@@ -235,11 +235,11 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
       {/* Deal Info Card */}
       <div className="glass-panel rounded-2xl p-5 space-y-4 shadow-glass">
         <div className="flex items-center justify-between">
-          <span className={cn('text-xs px-3 py-1 rounded-full border', STAGE_PILL[deal.stage] || STAGE_PILL['ארכיון'])}>
-            {deal.stage}
+          <span className={cn('text-xs px-3 py-1 rounded-full border', STAGE_PILL[deal.stage_display] || STAGE_PILL['ארכיון'])}>
+            {deal.stage_display}
           </span>
           {deal.value != null && (
-            <span className="text-2xl font-extrabold text-slate-900">{formatCurrency(deal.value)}</span>
+            <span className="text-2xl font-extrabold text-slate-900">{formatCurrency(Number(deal.value) || 0)}</span>
           )}
         </div>
 
@@ -247,7 +247,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
         <div>
           <p className="text-xs text-slate-400 mb-2">שנה שלב</p>
           <div className="flex flex-wrap gap-1.5">
-            {STAGES.filter(s => s !== deal.stage).map(stage => (
+            {STAGES.filter(s => s !== deal.stage_display).map(stage => (
               <button
                 key={stage}
                 onClick={() => stageMutation.mutate(stage)}
@@ -378,11 +378,11 @@ export default function DealsPage() {
   });
 
   const allDeals = data?.data || [];
-  const deals = allDeals.filter(d => stageFilter ? d.stage === stageFilter : true);
+  const deals = allDeals.filter(d => stageFilter ? d.stage_display === stageFilter : true);
 
   const totalPipeline = allDeals
-    .filter(d => d.stage !== 'ארכיון')
-    .reduce((sum, d) => sum + (d.value || 0), 0);
+    .filter(d => d.stage_display !== 'ארכיון')
+    .reduce((sum, d) => sum + (Number(d.value) || 0), 0);
 
   if (selectedDeal) {
     const currentDeal = allDeals.find(d => d.id === selectedDeal.id) || selectedDeal;
@@ -419,7 +419,7 @@ export default function DealsPage() {
           הכל
         </button>
         {STAGES.map(stage => {
-          const count = allDeals.filter(d => d.stage === stage).length;
+          const count = allDeals.filter(d => d.stage_display === stage).length;
           return (
             <button
               key={stage}
@@ -458,16 +458,16 @@ export default function DealsPage() {
             >
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-sm font-bold border border-white shrink-0">
-                  {(deal.contact_name || deal.title).charAt(0)}
+                  {(deal.contact_name || (deal.name || deal.title || "")).charAt(0)}
                 </div>
                 <div>
-                  <p className="text-sm font-bold text-slate-900">{deal.title}</p>
+                  <p className="text-sm font-bold text-slate-900">{(deal.name || deal.title || "")}</p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {deal.contact_name && (
                       <p className="text-xs text-slate-500">{deal.contact_name}</p>
                     )}
-                    <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', STAGE_PILL[deal.stage] || STAGE_PILL['ארכיון'])}>
-                      {deal.stage}
+                    <span className={cn('text-[10px] px-2 py-0.5 rounded-full border', STAGE_PILL[deal.stage_display] || STAGE_PILL['ארכיון'])}>
+                      {deal.stage_display}
                     </span>
                   </div>
                 </div>
@@ -475,7 +475,7 @@ export default function DealsPage() {
               <div className="flex items-center gap-3">
                 {deal.value ? (
                   <span className="text-sm font-bold text-slate-900">
-                    {formatCurrency(deal.value)}
+                    {formatCurrency(Number(deal.value) || 0)}
                   </span>
                 ) : null}
                 <span className="material-symbols-outlined text-slate-300 text-[18px] group-hover:text-slate-500 transition-colors">

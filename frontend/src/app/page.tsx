@@ -26,13 +26,13 @@ export default function DashboardPage() {
   const contacts = contactsData?.data || [];
   const activities = (activitiesData?.data || []).slice(0, 6);
 
-  const openDeals = deals.filter(d => d.stage !== 'ארכיון');
+  const openDeals = deals.filter(d => d.stage_display !== 'ארכיון');
   const totalValue = openDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
   const activeCount = openDeals.length;
 
   // Filtered deals for pipeline section
   const filteredDeals = stageFilter
-    ? openDeals.filter(d => d.stage === stageFilter)
+    ? openDeals.filter(d => d.stage_display === stageFilter)
     : openDeals;
 
   return (
@@ -116,7 +116,7 @@ export default function DashboardPage() {
             <div>
               <p className="text-slate-500 text-xs font-medium mb-0.5">עסקאות החודש</p>
               <p className="text-slate-900 text-xl font-bold">
-                {dl ? '...' : formatCurrency(openDeals.reduce((s, d) => s + (d.value || 0), 0))}
+                {dl ? '...' : formatCurrency(openDeals.reduce((s, d) => s + (Number(d.value) || 0), 0))}
               </p>
             </div>
           </div>
@@ -254,12 +254,12 @@ export default function DashboardPage() {
               >
                 {/* Avatar / Initials */}
                 <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-lg font-bold border border-white shrink-0">
-                  {(deal.contact_name || deal.title).charAt(0)}
+                  {(deal.contact_name || (deal.name || deal.title || "")).charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-0.5">
                     <h4 className="text-slate-900 font-bold text-sm truncate">
-                      {deal.contact_name || deal.title}
+                      {deal.contact_name || (deal.name || deal.title || "")}
                     </h4>
                     {deal.value ? (
                       <span className="text-slate-900 font-bold text-sm">
@@ -267,11 +267,11 @@ export default function DashboardPage() {
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-slate-500 text-xs truncate mb-1">{deal.title}</p>
+                  <p className="text-slate-500 text-xs truncate mb-1">{(deal.name || deal.title || "")}</p>
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage)}`} />
-                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage)}`}>
-                      {deal.stage}
+                    <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage_display)}`} />
+                    <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display)}`}>
+                      {deal.stage_display}
                     </span>
                     {getDaysSince(deal.updated_at) > 5 && (
                       <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">

@@ -31,14 +31,14 @@ function DealCard({
     <div className="bg-white/80 p-3 rounded-2xl shadow-sm hover:shadow-md transition-shadow border border-white/60">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-sm font-bold border border-white shrink-0">
-          {(deal.contact_name || deal.title).charAt(0)}
+          {(deal.contact_name || (deal.name || deal.title || "")).charAt(0)}
         </div>
         <div className="flex-1 min-w-0">
-          <h4 className="text-slate-900 font-bold text-sm truncate">{deal.contact_name || deal.title}</h4>
-          <p className="text-slate-500 text-xs truncate">{deal.title}</p>
+          <h4 className="text-slate-900 font-bold text-sm truncate">{deal.contact_name || (deal.name || deal.title || "")}</h4>
+          <p className="text-slate-500 text-xs truncate">{(deal.name || deal.title || "")}</p>
         </div>
         {deal.value ? (
-          <span className="text-slate-900 font-bold text-sm shrink-0">{formatCurrency(deal.value)}</span>
+          <span className="text-slate-900 font-bold text-sm shrink-0">{formatCurrency(Number(deal.value) || 0)}</span>
         ) : null}
       </div>
 
@@ -54,7 +54,7 @@ function DealCard({
 
       {showActions && (
         <div className="mt-2 flex gap-1 flex-wrap">
-          {STAGES.filter(s => s !== deal.stage).map(stage => {
+          {STAGES.filter(s => s !== deal.stage_display).map(stage => {
             const c = STAGE_COLORS[stage] || STAGE_COLORS['ארכיון'];
             return (
               <button
@@ -84,7 +84,7 @@ function StageColumn({
   onMoveStage: (dealId: number, stage: string) => void;
   isPending: boolean;
 }) {
-  const totalValue = deals.reduce((sum, d) => sum + (d.value || 0), 0);
+  const totalValue = deals.reduce((sum, d) => sum + (Number(d.value) || 0), 0);
   const c = STAGE_COLORS[stage] || STAGE_COLORS['ארכיון'];
 
   return (

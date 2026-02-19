@@ -36,13 +36,13 @@ export default function ReportsPage() {
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    const activeDeals = deals.filter(d => d.stage !== 'ארכיון');
-    const closedDeals = deals.filter(d => CLOSED_STAGES.includes(d.stage));
+    const activeDeals = deals.filter(d => d.stage_display !== 'ארכיון');
+    const closedDeals = deals.filter(d => CLOSED_STAGES.includes(d.stage_display));
     const closedThisMonth = closedDeals.filter(d => new Date(d.updated_at) >= startOfMonth);
-    const archivedDeals = deals.filter(d => d.stage === 'ארכיון');
+    const archivedDeals = deals.filter(d => d.stage_display === 'ארכיון');
 
-    const totalPipelineValue = activeDeals.reduce((s, d) => s + (d.value || 0), 0);
-    const closedThisMonthValue = closedThisMonth.reduce((s, d) => s + (d.value || 0), 0);
+    const totalPipelineValue = activeDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
+    const closedThisMonthValue = closedThisMonth.reduce((s, d) => s + (Number(d.value) || 0), 0);
 
     // Win rate: closed / (closed + archived)
     const totalEnded = closedDeals.length + archivedDeals.length;
@@ -51,12 +51,12 @@ export default function ReportsPage() {
     // By stage
     const allStages = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
     const maxValue = Math.max(
-      ...allStages.map(stage => deals.filter(d => d.stage === stage).reduce((s, d) => s + (d.value || 0), 0)),
+      ...allStages.map(stage => deals.filter(d => d.stage_display === stage).reduce((s, d) => s + (Number(d.value) || 0), 0)),
       1
     );
     const stageStats: StageStats[] = allStages.map(stage => {
-      const stageDeals = deals.filter(d => d.stage === stage);
-      const total = stageDeals.reduce((s, d) => s + (d.value || 0), 0);
+      const stageDeals = deals.filter(d => d.stage_display === stage);
+      const total = stageDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
       return {
         stage,
         count: stageDeals.length,

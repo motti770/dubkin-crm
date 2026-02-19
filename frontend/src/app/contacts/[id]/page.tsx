@@ -214,17 +214,17 @@ export default function ContactDetailPage() {
                 className="glass-card rounded-2xl p-4 shadow-glass flex items-center gap-3"
               >
                 <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-sm font-bold shrink-0">
-                  {deal.title.charAt(0)}
+                  {(deal.name || deal.title || "").charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-slate-900 font-semibold text-sm truncate">{deal.title}</p>
-                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage)}`}>
-                    {deal.stage}
+                  <p className="text-slate-900 font-semibold text-sm truncate">{(deal.name || deal.title || "")}</p>
+                  <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display)}`}>
+                    {deal.stage_display}
                   </span>
                 </div>
                 {deal.value && (
                   <span className="text-slate-900 font-bold text-sm shrink-0">
-                    {formatCurrency(deal.value)}
+                    {formatCurrency(Number(deal.value) || 0)}
                   </span>
                 )}
               </div>

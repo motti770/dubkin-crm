@@ -73,11 +73,16 @@ export interface Contact {
 
 export interface Deal {
   id: number;
-  title: string;
+  name: string;        // deal title
+  title?: string;      // alias (may not exist)
   contact_id?: number;
   contact_name?: string;
-  value?: number;
-  stage: string;
+  contact_phone?: string;
+  value?: string | number;
+  stage_display: string;  // Hebrew: צינון, אפיון, etc.
+  stage_name?: string;    // internal: lead, etc.
+  stage?: string;         // alias
+  stage_id?: number;
   notes?: string;
   created_at: string;
   updated_at: string;
