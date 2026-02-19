@@ -99,9 +99,19 @@ export interface Activity {
   created_at: string;
 }
 
+export interface StageInfo {
+  id: number;
+  name: string;
+  display_name: string;
+  position: number;
+  color: string;
+}
+
 export interface PipelineStage {
-  stage: string;
+  stage: StageInfo;
   deals: Deal[];
+  deal_count: number;
+  total_value: string;
 }
 
 // ─── Contacts ─────────────────────────────────────────────────────────────────
@@ -137,7 +147,7 @@ export const dealsApi = {
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 export const pipelineApi = {
-  get: () => fetchApi<PipelineStage[]>('/pipeline'),
+  get: () => fetchApi<{ pipeline: PipelineStage[]; summary: unknown }>('/pipeline').then(d => d.pipeline),
 };
 
 // ─── Activities ───────────────────────────────────────────────────────────────

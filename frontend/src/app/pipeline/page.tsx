@@ -132,7 +132,7 @@ export default function PipelinePage() {
 
   const { data: pipeline, isLoading } = useQuery({
     queryKey: ['pipeline'],
-    queryFn: pipelineApi.get,
+    queryFn: () => pipelineApi.get(),
   });
 
   const updateStageMutation = useMutation({
@@ -148,7 +148,7 @@ export default function PipelinePage() {
   STAGES.forEach(s => { stageMap[s] = []; });
   if (pipeline) {
     pipeline.forEach(({ stage, deals }) => {
-      stageMap[stage] = deals || [];
+      stageMap[stage.display_name] = deals || [];
     });
   }
 
