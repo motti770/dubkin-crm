@@ -28,7 +28,7 @@ app.use(express.json());
 
 // ─── Public routes ────────────────────────────────────────────────────────────
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', service: 'dubkin-crm', timestamp: new Date() });
+  res.json({ status: 'ok', service: 'dobkin-crm', timestamp: new Date() });
 });
 
 app.use('/auth', authRouter);        // /auth/login  /auth/me  /auth/users …

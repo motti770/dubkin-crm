@@ -3,10 +3,10 @@ version: '3.9'
 services:
   crm-db:
     image: postgres:16-alpine
-    container_name: dubkin-crm-db
+    container_name: dobkin-crm-db
     restart: unless-stopped
     environment:
-      POSTGRES_DB: dubkin_crm
+      POSTGRES_DB: dobkin_crm
       POSTGRES_USER: crm_user
       POSTGRES_PASSWORD: changeme
     volumes:
@@ -15,14 +15,14 @@ services:
     networks:
       - crm-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U crm_user -d dubkin_crm"]
+      test: ["CMD-SHELL", "pg_isready -U crm_user -d dobkin_crm"]
       interval: 10s
       timeout: 5s
       retries: 5
 
   crm-api:
     image: node:20-alpine
-    container_name: dubkin-crm-api
+    container_name: dobkin-crm-api
     restart: unless-stopped
     working_dir: /app
     command: sh -c "npm install && npm start"
@@ -33,13 +33,13 @@ services:
     environment:
       DB_HOST: crm-db
       DB_PORT: 5432
-      DB_NAME: dubkin_crm
+      DB_NAME: dobkin_crm
       DB_USER: crm_user
       DB_PASSWORD: changeme
       PORT: 3001
       NODE_ENV: production
       JWT_SECRET: ${JWT_SECRET:-replace-with-strong-secret-in-production}
-      DATABASE_URL: postgres://crm_user:changeme@crm-db:5432/dubkin_crm
+      DATABASE_URL: postgres://crm_user:changeme@crm-db:5432/dobkin_crm
     ports:
       - "3001:3001"
     depends_on:
@@ -54,7 +54,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: https://crm.motti-automation.com/api
-    container_name: dubkin-crm-frontend
+    container_name: dobkin-crm-frontend
     restart: unless-stopped
     environment:
       NEXT_PUBLIC_API_URL: https://crm.motti-automation.com/api

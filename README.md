@@ -23,8 +23,8 @@
 
 ```bash
 # 1. Clone
-git clone https://github.com/motti770/dubkin-crm.git
-cd dubkin-crm
+git clone https://github.com/motti770/dobkin-crm.git
+cd dobkin-crm
 
 # 2. הגדרת ENV
 cp .env.example .env
@@ -187,10 +187,10 @@ GET /pipeline
 npm install
 
 # הגדר משתני env (בשורת הפקודה)
-export DB_HOST=localhost DB_USER=crm_user DB_PASSWORD=changeme DB_NAME=dubkin_crm
+export DB_HOST=localhost DB_USER=crm_user DB_PASSWORD=changeme DB_NAME=dobkin_crm
 
 # יצירת Schema
-psql -U crm_user -d dubkin_crm -f sql/schema.sql
+psql -U crm_user -d dobkin_crm -f sql/schema.sql
 
 # הרצה
 npm run dev   # עם nodemon (watch mode)
