@@ -72,33 +72,25 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Quick Actions Grid */}
+      {/* Quick Actions — horizontal scroll, all pages */}
       <section className="px-2 md:px-0 py-4">
-        <div className="grid grid-cols-4 gap-3">
-          <Link href="/contacts" className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-primary shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">contacts</span>
-            </div>
-            <span className="text-xs font-medium text-slate-600">לקוחות</span>
-          </Link>
-          <Link href="/deals" className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-[#25D366] shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">handshake</span>
-            </div>
-            <span className="text-xs font-medium text-slate-600">עסקאות</span>
-          </Link>
-          <Link href="/tasks" className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-amber-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">task_alt</span>
-            </div>
-            <span className="text-xs font-medium text-slate-600">משימות</span>
-          </Link>
-          <Link href="/reports" className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-purple-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">analytics</span>
-            </div>
-            <span className="text-xs font-medium text-slate-600">דוחות</span>
-          </Link>
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+          {[
+            { href: '/contacts', icon: 'contacts',      label: 'לקוחות',  color: 'text-primary' },
+            { href: '/deals',    icon: 'handshake',     label: 'עסקאות',  color: 'text-emerald-500' },
+            { href: '/pipeline', icon: 'view_kanban',   label: 'פייפליין', color: 'text-blue-500' },
+            { href: '/tasks',    icon: 'task_alt',      label: 'משימות',  color: 'text-amber-500' },
+            { href: '/calendar', icon: 'calendar_month',label: 'יומן',    color: 'text-rose-500' },
+            { href: '/reports',  icon: 'analytics',     label: 'דוחות',   color: 'text-purple-500' },
+            { href: '/chat',     icon: 'forum',         label: 'צ׳אט',    color: 'text-teal-500' },
+          ].map(({ href, icon, label, color }) => (
+            <Link key={href} href={href} className="flex flex-col items-center gap-2 group shrink-0">
+              <div className={`glass-panel h-14 w-14 rounded-2xl flex items-center justify-center ${color} shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95`}>
+                <span className="material-symbols-outlined">{icon}</span>
+              </div>
+              <span className="text-xs font-medium text-slate-600 whitespace-nowrap">{label}</span>
+            </Link>
+          ))}
         </div>
       </section>
 

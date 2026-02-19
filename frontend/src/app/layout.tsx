@@ -30,17 +30,10 @@ const sidebarItems: NavItem[] = [
 
 const bottomNavItems: NavItem[] = [
   { href: '/',          label: 'בית',        icon: 'home' },
-  { href: '/contacts',  label: 'לקוחות',    icon: 'contacts' },
-  // FAB goes here (index 2)
-  { href: '/deals',     label: 'עסקאות',     icon: 'handshake' },
   { href: '/pipeline',  label: 'פייפליין',   icon: 'view_kanban' },
-];
-
-const moreMenuItems: NavItem[] = [
-  { href: '/tasks',     label: 'משימות',     icon: 'task_alt' },
+  // FAB goes here (index 2)
   { href: '/calendar',  label: 'יומן',       icon: 'calendar_month' },
   { href: '/reports',   label: 'דוחות',      icon: 'analytics' },
-  { href: '/chat',      label: 'צ׳אט שותפים', icon: 'forum' },
 ];
 
 // ─── FAB Modal (New Lead) ─────────────────────────────────────────────────────
@@ -269,117 +262,61 @@ function DesktopSidebar() {
 // ─── Bottom Navigation (Mobile) ──────────────────────────────────────────────
 function BottomNav({ onFabClick }: { onFabClick: () => void }) {
   const pathname = usePathname();
-  const [moreOpen, setMoreOpen] = useState(false);
-
-  const isMoreActive = moreMenuItems.some(({ href }) => pathname.startsWith(href));
 
   return (
-    <>
-      {/* More Menu Overlay */}
-      {moreOpen && (
-        <>
-          <div
-            className="fixed inset-0 bg-black/30 backdrop-blur-sm z-40"
-            onClick={() => setMoreOpen(false)}
-          />
-          <div className="fixed bottom-[80px] left-4 right-4 max-w-lg mx-auto z-50 glass-panel rounded-3xl p-4 shadow-2xl slide-up">
-            <p className="text-xs font-bold text-slate-400 mb-3 px-1">עוד דפים</p>
-            <div className="grid grid-cols-4 gap-2">
-              {moreMenuItems.map(({ href, label, icon }) => {
-                const active = pathname.startsWith(href);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    onClick={() => setMoreOpen(false)}
-                    className={cn(
-                      'flex flex-col items-center gap-1.5 p-3 rounded-2xl transition-all duration-200',
-                      active ? 'bg-primary/10 text-primary' : 'text-slate-600 hover:bg-white/80'
-                    )}
-                  >
-                    <span
-                      className="material-symbols-outlined text-[26px]"
-                      style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}
-                    >
-                      {icon}
-                    </span>
-                    <span className="text-[10px] font-medium text-center leading-tight">{label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </>
-      )}
+    <nav className="md:hidden glass-nav fixed bottom-0 left-0 right-0 px-4 pb-6 pt-2 z-40 rounded-t-3xl">
+      <div className="flex justify-around items-end max-w-lg mx-auto">
+        {bottomNavItems.map(({ href, label, icon }, i) => {
+          const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
 
-      <nav className="md:hidden glass-nav fixed bottom-0 left-0 right-0 px-4 pb-6 pt-2 z-40 rounded-t-3xl">
-        <div className="flex justify-around items-end max-w-lg mx-auto">
-          {bottomNavItems.map(({ href, label, icon }, i) => {
-            const active = href === '/' ? pathname === '/' : pathname.startsWith(href);
-
-            // Insert FAB in the center (after 2nd item)
-            if (i === 2) {
-              return (
-                <div key="fab-and-item" className="contents">
-                  {/* FAB */}
-                  <div className="relative -top-5">
-                    <button
-                      onClick={onFabClick}
-                      className="bg-primary text-white h-14 w-14 rounded-full shadow-lg shadow-blue-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 border-4 border-[#e6f1fe]"
-                    >
-                      <span className="material-symbols-outlined text-[28px]">add</span>
-                    </button>
-                  </div>
-                  {/* Nav item */}
-                  <Link
-                    href={href}
-                    className={cn(
-                      'flex flex-col items-center gap-1 group',
-                      active ? 'text-primary' : 'text-slate-400 hover:text-primary transition-colors'
-                    )}
-                  >
-                    <div className="h-8 flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-1">
-                      <span className="material-symbols-outlined text-[26px]" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{icon}</span>
-                    </div>
-                    <span className={cn('text-[10px]', active ? 'font-bold' : 'font-medium')}>{label}</span>
-                  </Link>
-                </div>
-              );
-            }
-
+          // Insert FAB in the center (after 2nd item)
+          if (i === 2) {
             return (
-              <Link
-                key={href}
-                href={href}
-                className={cn(
-                  'flex flex-col items-center gap-1 group',
-                  active ? 'text-primary' : 'text-slate-400 hover:text-primary transition-colors'
-                )}
-              >
-                <div className="h-8 flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-1">
-                  <span className="material-symbols-outlined text-[26px]" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{icon}</span>
+              <div key="fab-and-item" className="contents">
+                {/* FAB */}
+                <div className="relative -top-5">
+                  <button
+                    onClick={onFabClick}
+                    className="bg-primary text-white h-14 w-14 rounded-full shadow-lg shadow-blue-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 border-4 border-[#e6f1fe]"
+                  >
+                    <span className="material-symbols-outlined text-[28px]">add</span>
+                  </button>
                 </div>
-                <span className={cn('text-[10px]', active ? 'font-bold' : 'font-medium')}>{label}</span>
-              </Link>
+                {/* Nav item */}
+                <Link
+                  href={href}
+                  className={cn(
+                    'flex flex-col items-center gap-1 group',
+                    active ? 'text-primary' : 'text-slate-400 hover:text-primary transition-colors'
+                  )}
+                >
+                  <div className="h-8 flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-1">
+                    <span className="material-symbols-outlined text-[26px]" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{icon}</span>
+                  </div>
+                  <span className={cn('text-[10px]', active ? 'font-bold' : 'font-medium')}>{label}</span>
+                </Link>
+              </div>
             );
-          })}
+          }
 
-          {/* More button */}
-          <button
-            onClick={() => setMoreOpen(v => !v)}
-            className={cn(
-              'flex flex-col items-center gap-1 group',
-              (isMoreActive || moreOpen) ? 'text-primary' : 'text-slate-400 hover:text-primary transition-colors'
-            )}
-          >
-            <div className="h-8 flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-1">
-              <span className="material-symbols-outlined text-[26px]">more_horiz</span>
-            </div>
-            <span className={cn('text-[10px]', (isMoreActive || moreOpen) ? 'font-bold' : 'font-medium')}>עוד</span>
-          </button>
-        </div>
-      </nav>
-    </>
+          return (
+            <Link
+              key={href}
+              href={href}
+              className={cn(
+                'flex flex-col items-center gap-1 group',
+                active ? 'text-primary' : 'text-slate-400 hover:text-primary transition-colors'
+              )}
+            >
+              <div className="h-8 flex items-center justify-center transition-transform duration-200 group-hover:-translate-y-1">
+                <span className="material-symbols-outlined text-[26px]" style={active ? { fontVariationSettings: "'FILL' 1" } : undefined}>{icon}</span>
+              </div>
+              <span className={cn('text-[10px]', active ? 'font-bold' : 'font-medium')}>{label}</span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }
 
