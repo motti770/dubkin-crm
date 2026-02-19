@@ -30,31 +30,33 @@ function Sidebar() {
   return (
     <aside
       className={cn(
-        'flex flex-col bg-card border-l border-border transition-all duration-300 min-h-screen',
+        'glass-sidebar relative z-10 flex flex-col transition-all duration-300 min-h-screen shrink-0',
         collapsed ? 'w-16' : 'w-56'
       )}
     >
       {/* Logo */}
-      <div className="flex items-center justify-between p-4 border-b border-border h-16">
+      <div className="flex items-center justify-between px-4 py-5">
         {!collapsed && (
           <div>
-            <div className="text-sm font-bold text-foreground">דובקין CRM</div>
-            <div className="text-xs text-muted-foreground">ניהול לקוחות</div>
+            <div className="text-base font-black text-white tracking-tight">
+              Dubkin<span className="text-blue-400">.</span>
+            </div>
+            <div className="text-[10px] text-blue-300/60 uppercase tracking-widest mt-0.5">CRM</div>
           </div>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors"
+          className="p-1.5 rounded-lg hover:bg-white/10 text-white/40 hover:text-white transition-all"
         >
           <ChevronRight
-            size={16}
+            size={15}
             className={cn('transition-transform duration-300', collapsed ? 'rotate-180' : 'rotate-0')}
           />
         </button>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 p-2 space-y-1">
+      <nav className="flex-1 px-2 space-y-1">
         {navItems.map((item) => {
           const Icon   = item.icon;
           const active = pathname === item.href;
@@ -63,13 +65,13 @@ function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors',
+                'flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200',
                 active
-                  ? 'bg-primary/20 text-primary font-medium'
-                  : 'text-muted-foreground hover:bg-secondary hover:text-foreground'
+                  ? 'bg-blue-500/20 text-blue-300 font-semibold border border-blue-400/20 shadow-sm'
+                  : 'text-white/40 hover:bg-white/08 hover:text-white/80'
               )}
             >
-              <Icon size={18} className="shrink-0" />
+              <Icon size={17} className="shrink-0" />
               {!collapsed && <span>{item.label}</span>}
             </Link>
           );
@@ -77,19 +79,19 @@ function Sidebar() {
       </nav>
 
       {/* Footer */}
-      <div className="p-3 border-t border-border">
+      <div className="p-3 border-t border-white/06">
         {!collapsed && (
-          <div className="mb-2">
-            <div className="text-xs text-muted-foreground">מורדי דובקין</div>
-            <div className="text-xs text-muted-foreground/60">שותף טכנולוגי</div>
+          <div className="mb-3 px-1">
+            <div className="text-xs text-white/60 font-medium">מורדי דובקין</div>
+            <div className="text-[10px] text-white/30 mt-0.5">שותף טכנולוגי</div>
           </div>
         )}
         <button
           onClick={() => authApi.logout()}
-          className="flex items-center gap-2 px-3 py-2 rounded-lg text-xs text-muted-foreground
-                     hover:bg-secondary hover:text-foreground transition-colors w-full"
+          className="flex items-center gap-2 px-3 py-2 rounded-xl text-xs text-white/30
+                     hover:bg-red-500/15 hover:text-red-300 transition-all w-full"
         >
-          <LogOut size={15} className="shrink-0" />
+          <LogOut size={14} className="shrink-0" />
           {!collapsed && <span>יציאה</span>}
         </button>
       </div>
