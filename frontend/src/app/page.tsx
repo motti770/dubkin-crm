@@ -199,12 +199,12 @@ export default function DashboardPage() {
             <p className="text-slate-400 text-sm">אין עסקאות להצגה</p>
           </div>
         ) : (
-          <div className="flex gap-3 overflow-x-auto no-scrollbar snap-x pb-2 md:grid md:grid-cols-2 lg:grid-cols-3">
+          <div className="flex flex-col gap-3 md:grid md:grid-cols-2 lg:grid-cols-3">
             {filteredDeals.slice(0, 12).map((deal, idx) => (
               <Link
                 key={deal.id}
                 href={`/deals/${deal.id}`}
-                className="min-w-[280px] md:min-w-0 snap-start shrink-0 md:shrink bg-white/50 border border-white/60 p-4 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] fade-in-up"
+                className="bg-white/50 border border-white/60 p-4 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] fade-in-up"
                 style={{ animationDelay: `${idx * 60}ms` }}
               >
                 <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-lg font-bold border border-white shrink-0">
