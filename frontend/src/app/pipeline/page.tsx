@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   DndContext,
@@ -21,29 +21,17 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import { pipelineApi, dealsApi, Deal } from '@/lib/api';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { GripVertical, MoreHorizontal, DollarSign } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { GripVertical, DollarSign } from 'lucide-react';
 
 const STAGES = ['צינון', 'אפיון', 'מחירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
 
-const STAGE_COLORS: Record<string, string> = {
-  'צינון': 'bg-slate-500/10 border-slate-500/30',
-  'אפיון': 'bg-blue-500/10 border-blue-500/30',
-  'מחירה': 'bg-amber-500/10 border-amber-500/30',
-  'סגירה': 'bg-orange-500/10 border-orange-500/30',
-  'לקוח פעיל': 'bg-emerald-500/10 border-emerald-500/30',
-  'ארכיון': 'bg-zinc-500/10 border-zinc-500/30',
-};
-
-const STAGE_HEADER_COLORS: Record<string, string> = {
-  'צינון': 'text-slate-400',
-  'אפיון': 'text-blue-400',
-  'מחירה': 'text-amber-400',
-  'סגירה': 'text-orange-400',
-  'לקוח פעיל': 'text-emerald-400',
-  'ארכיון': 'text-zinc-400',
+const STAGE_ACCENT: Record<string, { header: string; bubble: string; gradient: string }> = {
+  'צינון':       { header: 'text-slate-300',   bubble: 'bg-slate-500/30 text-slate-300',   gradient: 'from-slate-400/20 to-transparent' },
+  'אפיון':      { header: 'text-blue-400',    bubble: 'bg-blue-500/30 text-blue-300',     gradient: 'from-blue-400/20 to-transparent' },
+  'מחירה':      { header: 'text-amber-400',   bubble: 'bg-amber-500/30 text-amber-300',   gradient: 'from-amber-400/20 to-transparent' },
+  'סגירה':      { header: 'text-purple-400',  bubble: 'bg-purple-500/30 text-purple-300', gradient: 'from-purple-400/20 to-transparent' },
+  'לקוח פעיל':  { header: 'text-emerald-400', bubble: 'bg-emerald-500/30 text-emerald-300', gradient: 'from-emerald-400/20 to-transparent' },
+  'ארכיון':     { header: 'text-gray-400',    bubble: 'bg-gray-500/30 text-gray-300',     gradient: 'from-gray-400/20 to-transparent' },
 };
 
 function DealCard({ deal, isDragging }: { deal: Deal; isDragging?: boolean }) {
@@ -60,23 +48,28 @@ function DealCard({ deal, isDragging }: { deal: Deal; isDragging?: boolean }) {
   return (
     <div
       ref={setNodeRef}
-      style={style}
-      className={cn(
-        'bg-card border border-border rounded-lg p-3 cursor-grab active:cursor-grabbing select-none',
-        'hover:border-primary/40 transition-colors',
-        isDragging && 'opacity-50'
-      )}
+      style={{
+        ...style,
+        background: 'rgba(0,0,0,0.2)',
+        borderColor: 'rgba(255,255,255,0.1)',
+      }}
+      className={[
+        'rounded-xl p-3 cursor-grab active:cursor-grabbing select-none',
+        'border backdrop-blur-md transition-all duration-200',
+        'hover:border-white/20 hover:bg-black/30',
+        isDragging ? 'opacity-40' : '',
+      ].join(' ')}
       {...attributes}
       {...listeners}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-foreground truncate">{deal.title}</p>
+          <p className="text-sm font-medium text-white/90 truncate">{deal.title}</p>
           {deal.contact_name && (
-            <p className="text-xs text-muted-foreground mt-0.5 truncate">{deal.contact_name}</p>
+            <p className="text-xs text-white/50 mt-0.5 truncate">{deal.contact_name}</p>
           )}
         </div>
-        <GripVertical size={14} className="text-muted-foreground/40 shrink-0 mt-0.5" />
+        <GripVertical size={14} className="text-white/20 shrink-0 mt-0.5" />
       </div>
       {deal.value ? (
         <div className="mt-2 flex items-center gap-1">
@@ -84,7 +77,7 @@ function DealCard({ deal, isDragging }: { deal: Deal; isDragging?: boolean }) {
           <span className="text-xs font-semibold text-emerald-400">{formatCurrency(deal.value)}</span>
         </div>
       ) : null}
-      <div className="mt-2 text-xs text-muted-foreground">
+      <div className="mt-2 text-xs text-white/40">
         {formatDate(deal.created_at)}
       </div>
     </div>
@@ -101,26 +94,33 @@ function StageColumn({
   activeId: string | null;
 }) {
   const totalValue = deals.reduce((sum, d) => sum + (d.value || 0), 0);
+  const accent = STAGE_ACCENT[stage];
 
   return (
     <div
-      className={cn(
-        'flex flex-col rounded-xl border p-3 min-w-[260px] max-w-[280px]',
-        STAGE_COLORS[stage]
-      )}
-      style={{ minHeight: 400 }}
+      className={[
+        'flex flex-col rounded-2xl p-3 min-w-[270px] max-w-[290px]',
+        'border backdrop-blur-xl',
+      ].join(' ')}
+      style={{
+        minHeight: 420,
+        background: 'rgba(255,255,255,0.06)',
+        borderColor: 'rgba(255,255,255,0.12)',
+      }}
     >
-      {/* Column header */}
-      <div className="flex items-center justify-between mb-3">
-        <div>
-          <h3 className={cn('text-sm font-semibold', STAGE_HEADER_COLORS[stage])}>{stage}</h3>
-          {totalValue > 0 && (
-            <p className="text-xs text-muted-foreground">{formatCurrency(totalValue)}</p>
-          )}
+      {/* Column header with gradient */}
+      <div className={`bg-gradient-to-b ${accent.gradient} rounded-xl px-3 py-2.5 mb-3`}>
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className={`text-sm font-bold ${accent.header}`}>{stage}</h3>
+            {totalValue > 0 && (
+              <p className="text-xs text-white/40 mt-0.5">{formatCurrency(totalValue)}</p>
+            )}
+          </div>
+          <span className={`text-xs font-semibold rounded-full px-2.5 py-0.5 ${accent.bubble}`}>
+            {deals.length}
+          </span>
         </div>
-        <span className="text-xs bg-secondary text-muted-foreground rounded-full px-2 py-0.5">
-          {deals.length}
-        </span>
       </div>
 
       {/* Drop zone */}
@@ -137,8 +137,11 @@ function StageColumn({
             />
           ))}
           {deals.length === 0 && (
-            <div className="flex-1 flex items-center justify-center border-2 border-dashed border-border/40 rounded-lg min-h-[80px]">
-              <p className="text-xs text-muted-foreground/50">גרור עסקה לכאן</p>
+            <div
+              className="flex-1 flex items-center justify-center rounded-xl min-h-[100px]"
+              style={{ border: '2px dashed rgba(255,255,255,0.15)' }}
+            >
+              <p className="text-xs text-white/30">גרור עסקה לכאן</p>
             </div>
           )}
         </div>
@@ -234,11 +237,15 @@ export default function PipelinePage() {
 
   if (isLoading) {
     return (
-      <div className="p-6">
-        <h1 className="text-2xl font-bold mb-6">פייפליין</h1>
+      <div className="relative z-10 p-6">
+        <h1 className="text-2xl font-bold text-white mb-6">פייפליין</h1>
         <div className="flex gap-4 overflow-x-auto pb-4">
           {STAGES.map(s => (
-            <div key={s} className="min-w-[260px] h-96 rounded-xl bg-card border border-border animate-pulse" />
+            <div
+              key={s}
+              className="min-w-[270px] h-96 rounded-2xl backdrop-blur-xl animate-pulse"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)' }}
+            />
           ))}
         </div>
       </div>
@@ -246,10 +253,10 @@ export default function PipelinePage() {
   }
 
   return (
-    <div className="p-6">
+    <div className="relative z-10 p-6">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">פייפליין</h1>
-        <p className="text-muted-foreground text-sm mt-1">גרור עסקאות בין השלבים</p>
+        <h1 className="text-2xl font-bold text-white">פייפליין</h1>
+        <p className="text-white/50 text-sm mt-1">גרור עסקאות בין השלבים</p>
       </div>
 
       <DndContext
@@ -272,10 +279,17 @@ export default function PipelinePage() {
 
         <DragOverlay>
           {activeDeal ? (
-            <div className="bg-card border border-primary/60 rounded-lg p-3 shadow-xl w-[260px]">
-              <p className="text-sm font-medium">{activeDeal.title}</p>
+            <div
+              className="rounded-xl p-3 shadow-2xl w-[260px] backdrop-blur-xl"
+              style={{
+                background: 'rgba(0,0,0,0.4)',
+                border: '2px solid rgba(59,130,246,0.6)',
+                boxShadow: '0 0 20px rgba(59,130,246,0.3), 0 0 60px rgba(59,130,246,0.1)',
+              }}
+            >
+              <p className="text-sm font-medium text-white">{activeDeal.title}</p>
               {activeDeal.contact_name && (
-                <p className="text-xs text-muted-foreground">{activeDeal.contact_name}</p>
+                <p className="text-xs text-white/50">{activeDeal.contact_name}</p>
               )}
               {activeDeal.value ? (
                 <p className="text-xs text-emerald-400 mt-1">{formatCurrency(activeDeal.value)}</p>

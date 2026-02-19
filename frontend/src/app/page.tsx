@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import {
   TrendingUp, Users, Handshake, Activity,
   ArrowUpRight, Clock, ChevronLeft,
+  Plus, User, LayoutDashboard,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -61,9 +62,9 @@ export default function DashboardPage() {
   return (
     <div className="relative z-10 p-5 space-y-5 max-w-5xl mx-auto">
 
-      {/* Header */}
+      {/* Greeting */}
       <div className="pt-2 pb-1">
-        <h1 className="text-2xl font-black text-white">דשבורד</h1>
+        <h1 className="text-2xl font-black text-white">שלום, מורדי 👋</h1>
         <p className="text-blue-300/50 text-xs mt-1">סקירה כללית של העסק</p>
       </div>
 
