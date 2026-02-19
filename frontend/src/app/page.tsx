@@ -73,8 +73,8 @@ export default function DashboardPage() {
         {STATS.map(({ key, label, icon: Icon, cls, iconCls }) => (
           <div key={key} className={`glass ${cls} p-4 flex items-center justify-between`}>
             <div>
-              <p className="text-[11px] text-white/50 mb-1">{label}</p>
-              <p className="text-xl font-black text-white leading-none">
+              <p className="text-[10px] uppercase tracking-wider text-white/40 mb-1">{label}</p>
+              <p className="text-3xl font-black text-white leading-none">
                 {statValues[key]}
               </p>
             </div>
