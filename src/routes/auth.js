@@ -9,14 +9,14 @@ const TOKEN_EXPIRES = '7d';
 
 // ─── POST /auth/login ────────────────────────────────────────────────────────
 router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password)
-    return res.status(400).json({ error: 'Email and password required' });
+  const { username, password } = req.body;
+  if (!username || !password)
+    return res.status(400).json({ error: 'Username and password required' });
 
   try {
     const { rows } = await db.query(
-      'SELECT * FROM users WHERE email = $1 AND is_active = TRUE',
-      [email.toLowerCase().trim()]
+      'SELECT * FROM users WHERE username = $1 AND is_active = TRUE',
+      [username.toLowerCase().trim()]
     );
     const user = rows[0];
     if (!user || !(await bcrypt.compare(password, user.password))) {

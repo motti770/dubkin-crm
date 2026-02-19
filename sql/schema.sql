@@ -119,6 +119,7 @@ CREATE TABLE IF NOT EXISTS users (
   role         VARCHAR(20)  NOT NULL DEFAULT 'client'
                 CHECK (role IN ('admin','client')),
   contact_id   INTEGER REFERENCES contacts(id) ON DELETE SET NULL, -- for client role
+  username     VARCHAR(100) UNIQUE,
   is_active    BOOLEAN DEFAULT TRUE,
   last_login   TIMESTAMPTZ,
   created_at   TIMESTAMPTZ DEFAULT NOW(),

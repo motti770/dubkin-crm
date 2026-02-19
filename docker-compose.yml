@@ -53,13 +53,13 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: http://crm-api:3001
+        NEXT_PUBLIC_API_URL: https://crm.motti-automation.com/api
     container_name: dubkin-crm-frontend
     restart: unless-stopped
     environment:
-      NEXT_PUBLIC_API_URL: http://crm-api:3001
+      NEXT_PUBLIC_API_URL: https://crm.motti-automation.com/api
     ports:
-      - "3000:3000"
+      - "3002:3000"
     depends_on:
       - crm-api
     networks:

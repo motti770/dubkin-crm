@@ -38,13 +38,13 @@ export interface AuthUser {
 }
 
 export const authApi = {
-  login: async (email: string, password: string): Promise<{ token: string; user: AuthUser }> => {
+  login: async (username: string, password: string): Promise<{ token: string; user: AuthUser }> => {
     const res = await fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ username, password }),
     });
-    if (!res.ok) throw new Error('אימייל או סיסמה שגויים');
+    if (!res.ok) throw new Error('שם משתמש או סיסמה שגויים');
     const data = await res.json();
     tokenStore.set(data.token);
     // Also set a cookie so Next.js middleware can check it

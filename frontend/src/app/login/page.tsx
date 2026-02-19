@@ -6,17 +6,17 @@ import { authApi } from '@/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail]       = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError]       = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [username, setUsername]  = useState('');
+  const [password, setPassword]  = useState('');
+  const [error, setError]        = useState('');
+  const [loading, setLoading]    = useState(false);
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await authApi.login(email, password);
+      await authApi.login(username, password);
       router.push('/');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'שגיאה בהתחברות');
@@ -40,13 +40,14 @@ export default function LoginPage() {
           className="bg-gray-900 border border-gray-800 rounded-2xl p-8 shadow-xl space-y-5"
         >
           <div>
-            <label className="block text-sm text-gray-400 mb-1.5">אימייל</label>
+            <label className="block text-sm text-gray-400 mb-1.5">שם משתמש</label>
             <input
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="you@example.com"
+              type="text"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              placeholder="mordi"
               required
+              autoComplete="username"
               className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5
                          text-white placeholder-gray-600 focus:outline-none focus:ring-2
                          focus:ring-blue-500 text-sm"
