@@ -18,7 +18,7 @@ function getGreeting() {
 export default function DashboardPage() {
   const [stageFilter, setStageFilter] = useState<string>('');
 
-  const { data: dealsData, isLoading: dl } = useQuery({ queryKey: ['deals'], queryFn: dealsApi.list });
+  const { data: dealsData, isLoading: dl } = useQuery({ queryKey: ['deals'], queryFn: () => dealsApi.list() });
   const { data: contactsData, isLoading: cl } = useQuery({ queryKey: ['contacts'], queryFn: () => contactsApi.list() });
   const { data: activitiesData } = useQuery({ queryKey: ['activities'], queryFn: () => activitiesApi.list() });
 
@@ -30,15 +30,14 @@ export default function DashboardPage() {
   const totalValue = openDeals.reduce((s, d) => s + (Number(d.value) || 0), 0);
   const activeCount = openDeals.length;
 
-  // Filtered deals for pipeline section
   const filteredDeals = stageFilter
     ? openDeals.filter(d => d.stage_display === stageFilter)
     : openDeals;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen page-enter">
       {/* Header & Main KPI */}
-      <header className="pt-8 pb-2 px-6">
+      <header className="pt-8 pb-2 px-2 md:px-0">
         {/* Top bar */}
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
@@ -50,14 +49,14 @@ export default function DashboardPage() {
               <h1 className="text-2xl font-bold text-slate-900 leading-none">מוטי 👋</h1>
             </div>
           </div>
-          <button className="glass-panel h-10 w-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-white/80 transition-colors">
+          <button className="glass-panel h-10 w-10 rounded-full flex items-center justify-center text-slate-600 hover:bg-white/80 transition-all duration-200 active:scale-95">
             <span className="material-symbols-outlined text-[20px]">notifications</span>
           </button>
         </div>
 
         {/* Big KPI */}
         <div className="glass-panel-dark rounded-2xl p-6 shadow-glass relative overflow-hidden group">
-          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-400/10 blur-2xl group-hover:bg-blue-400/20 transition-all" />
+          <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-blue-400/10 blur-2xl group-hover:bg-blue-400/20 transition-all duration-500" />
           <div className="relative z-10">
             <p className="text-slate-500 text-sm font-medium mb-1">שווי פייפליין נוכחי</p>
             <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-2">
@@ -74,28 +73,28 @@ export default function DashboardPage() {
       </header>
 
       {/* Quick Actions Grid */}
-      <section className="px-6 py-4">
+      <section className="px-2 md:px-0 py-4">
         <div className="grid grid-cols-4 gap-3">
           <Link href="/deals" className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-primary shadow-glass-sm group-hover:bg-white transition-all transform group-hover:scale-105">
+            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-primary shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
               <span className="material-symbols-outlined">add</span>
             </div>
             <span className="text-xs font-medium text-slate-600">ליד חדש</span>
           </Link>
           <button className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-[#25D366] shadow-glass-sm group-hover:bg-white transition-all transform group-hover:scale-105">
+            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-[#25D366] shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
               <span className="material-symbols-outlined">chat</span>
             </div>
             <span className="text-xs font-medium text-slate-600">וואטסאפ</span>
           </button>
           <button className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-blue-500 shadow-glass-sm group-hover:bg-white transition-all transform group-hover:scale-105">
+            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-blue-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
               <span className="material-symbols-outlined">call</span>
             </div>
             <span className="text-xs font-medium text-slate-600">שיחה</span>
           </button>
           <Link href="/tasks" className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-amber-500 shadow-glass-sm group-hover:bg-white transition-all transform group-hover:scale-105">
+            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-amber-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
               <span className="material-symbols-outlined">history</span>
             </div>
             <span className="text-xs font-medium text-slate-600">פולו-אפ</span>
@@ -103,11 +102,11 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* Secondary KPI Cards Scroll */}
-      <section className="pl-0 pr-6 pb-6 overflow-hidden">
-        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-2 pr-1 pl-6 snap-x">
-          {/* Card 1: Monthly deals */}
-          <div className="glass-panel min-w-[140px] p-4 rounded-3xl shadow-glass snap-start flex flex-col justify-between h-32">
+      {/* KPI Cards — horizontal scroll on mobile, grid on desktop */}
+      <section className="px-2 md:px-0 pb-6">
+        <div className="grid grid-cols-3 gap-4">
+          {/* Card 1 */}
+          <div className="glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up" style={{ animationDelay: '0ms' }}>
             <div className="flex justify-between items-start">
               <div className="bg-green-100 p-1.5 rounded-full text-green-600">
                 <span className="material-symbols-outlined text-[18px]">trending_up</span>
@@ -120,8 +119,8 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
-          {/* Card 2: Open follow-ups */}
-          <div className="glass-panel min-w-[140px] p-4 rounded-3xl shadow-glass snap-start flex flex-col justify-between h-32">
+          {/* Card 2 */}
+          <div className="glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up" style={{ animationDelay: '60ms' }}>
             <div className="flex justify-between items-start">
               <div className="bg-amber-100 p-1.5 rounded-full text-amber-600">
                 <span className="material-symbols-outlined text-[18px]">priority_high</span>
@@ -132,8 +131,8 @@ export default function DashboardPage() {
               <p className="text-slate-900 text-xl font-bold">{activities.length}</p>
             </div>
           </div>
-          {/* Card 3: New leads */}
-          <div className="glass-panel min-w-[140px] p-4 rounded-3xl shadow-glass snap-start flex flex-col justify-between h-32">
+          {/* Card 3 */}
+          <div className="glass-panel p-4 rounded-3xl shadow-glass flex flex-col justify-between h-32 fade-in-up" style={{ animationDelay: '120ms' }}>
             <div className="flex justify-between items-start">
               <div className="bg-blue-100 p-1.5 rounded-full text-blue-600">
                 <span className="material-symbols-outlined text-[18px]">bolt</span>
@@ -147,59 +146,13 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* חובות לגבייה */}
-      <section className="px-6 pb-4">
-        <h3 className="text-base font-bold text-slate-800 mb-3 flex items-center gap-2">
-          <span>💰</span> חובות לגבייה
-          <span className="text-xs font-semibold bg-red-100 text-red-600 px-2 py-0.5 rounded-full">5,500 ₪</span>
-        </h3>
-        <div className="flex flex-col gap-3">
-          {/* מנחם */}
-          <div className="rounded-2xl border border-red-200/60 bg-gradient-to-br from-red-50/80 to-amber-50/60 p-4 flex items-center gap-3 shadow-sm">
-            <div className="h-11 w-11 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-lg font-bold shrink-0">מ</div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-slate-900 font-bold text-sm">מנחם אברמצ'ייב</h4>
-              <p className="text-red-600 text-xs font-semibold">2,500 ₪ — אוטומציית ברכות</p>
-              <p className="text-slate-400 text-[10px]">לגבות מיידית!</p>
-            </div>
-            <a
-              href={`https://wa.me/9720527001234`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-10 w-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-transform shrink-0"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <span className="material-symbols-outlined text-[18px]">chat</span>
-            </a>
-          </div>
-          {/* דסי */}
-          <div className="rounded-2xl border border-amber-200/60 bg-gradient-to-br from-amber-50/80 to-orange-50/60 p-4 flex items-center gap-3 shadow-sm">
-            <div className="h-11 w-11 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 text-lg font-bold shrink-0">ד</div>
-            <div className="flex-1 min-w-0">
-              <h4 className="text-slate-900 font-bold text-sm">דסי רוזנטל</h4>
-              <p className="text-amber-700 text-xs font-semibold">3,000 ₪ — 3 חודשים × 1,000 ₪</p>
-              <p className="text-slate-400 text-[10px]">תשלום חודשי פלטפורמת נשים</p>
-            </div>
-            <a
-              href={`https://wa.me/972`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="h-10 w-10 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-transform shrink-0"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <span className="material-symbols-outlined text-[18px]">chat</span>
-            </a>
-          </div>
-        </div>
-      </section>
-
       {/* Pipeline Section */}
-      <section className="flex-1 rounded-t-[2.5rem] glass-panel-dark shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pt-6 pb-24 px-6 mt-2">
+      <section className="flex-1 rounded-t-[2.5rem] glass-panel-dark shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pt-6 pb-24 md:pb-8 px-6 mt-2">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-lg font-bold text-slate-800">פייפליין פעיל</h3>
           <Link
             href="/pipeline"
-            className="text-primary text-sm font-medium hover:text-blue-600 flex items-center gap-1"
+            className="text-primary text-sm font-medium hover:text-blue-600 flex items-center gap-1 transition-colors duration-200"
           >
             ראה הכל
             <span className="material-symbols-outlined text-[16px] rotate-180">arrow_right_alt</span>
@@ -212,8 +165,8 @@ export default function DashboardPage() {
             onClick={() => setStageFilter('')}
             className={
               !stageFilter
-                ? 'whitespace-nowrap bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md'
-                : 'whitespace-nowrap glass-panel px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:bg-white hover:text-slate-900 transition-colors'
+                ? 'whitespace-nowrap bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md transition-all duration-200'
+                : 'whitespace-nowrap glass-panel px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:bg-white hover:text-slate-900 transition-all duration-200'
             }
           >
             הכל
@@ -224,8 +177,8 @@ export default function DashboardPage() {
               onClick={() => setStageFilter(stage === stageFilter ? '' : stage)}
               className={
                 stageFilter === stage
-                  ? 'whitespace-nowrap bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md'
-                  : 'whitespace-nowrap glass-panel px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:bg-white hover:text-slate-900 transition-colors'
+                  ? 'whitespace-nowrap bg-slate-900 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md transition-all duration-200'
+                  : 'whitespace-nowrap glass-panel px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:bg-white hover:text-slate-900 transition-all duration-200'
               }
             >
               {stage}
@@ -235,31 +188,32 @@ export default function DashboardPage() {
 
         {/* Deals List */}
         {dl ? (
-          <div className="flex flex-col gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {[1, 2, 3].map(i => (
               <div key={i} className="bg-white/50 border border-white/60 p-3 rounded-2xl h-20 animate-pulse" />
             ))}
           </div>
         ) : filteredDeals.length === 0 ? (
           <div className="text-center py-10">
+            <span className="material-symbols-outlined text-slate-300 text-[48px] mb-2 block">handshake</span>
             <p className="text-slate-400 text-sm">אין עסקאות להצגה</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-3">
-            {filteredDeals.slice(0, 8).map(deal => (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {filteredDeals.slice(0, 12).map((deal, idx) => (
               <Link
                 key={deal.id}
-                href="/deals"
-                className="bg-white/50 border border-white/60 p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-shadow"
+                href={`/deals/${deal.id}`}
+                className="bg-white/50 border border-white/60 p-3 rounded-2xl flex items-center gap-3 shadow-sm hover:shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] fade-in-up"
+                style={{ animationDelay: `${idx * 60}ms` }}
               >
-                {/* Avatar / Initials */}
                 <div className="h-12 w-12 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-lg font-bold border border-white shrink-0">
-                  {(deal.contact_name || (deal.name || deal.title || "")).charAt(0)}
+                  {(deal.contact_name || deal.name || deal.title || '').charAt(0)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-center mb-0.5">
                     <h4 className="text-slate-900 font-bold text-sm truncate">
-                      {deal.contact_name || (deal.name || deal.title || "")}
+                      {deal.contact_name || deal.name || deal.title || ''}
                     </h4>
                     {deal.value ? (
                       <span className="text-slate-900 font-bold text-sm">
@@ -267,7 +221,7 @@ export default function DashboardPage() {
                       </span>
                     ) : null}
                   </div>
-                  <p className="text-slate-500 text-xs truncate mb-1">{(deal.name || deal.title || "")}</p>
+                  <p className="text-slate-500 text-xs truncate mb-1">{deal.name || deal.title || ''}</p>
                   <div className="flex items-center gap-1.5 flex-wrap">
                     <span className={`h-1.5 w-1.5 rounded-full ${getStageColor(deal.stage_display)}`} />
                     <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display)}`}>

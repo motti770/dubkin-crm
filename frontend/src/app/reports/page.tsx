@@ -27,7 +27,7 @@ interface StageStats {
 export default function ReportsPage() {
   const { data: dealsData, isLoading } = useQuery({
     queryKey: ['deals'],
-    queryFn: dealsApi.list,
+    queryFn: () => dealsApi.list(),
   });
 
   const deals = dealsData?.data || [];

@@ -374,7 +374,7 @@ export default function DealsPage() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['deals'],
-    queryFn: dealsApi.list,
+    queryFn: () => dealsApi.list(),
   });
 
   const allDeals = data?.data || [];

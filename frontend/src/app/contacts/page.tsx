@@ -23,7 +23,6 @@ const SOURCE_LABELS: Record<string, string> = {
   social: 'סושיאל',
   cold: 'קר',
   other: 'אחר',
-  // Hebrew sources
   'ישיר': 'ישיר',
   'שיתוף פעולה': 'שיתוף פעולה',
   'לקוחה ישנה': 'לקוחה ישנה',
@@ -58,11 +57,11 @@ function AddContactDialog({ onSuccess }: { onSuccess: () => void }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <button className="glass-panel h-10 w-10 rounded-full flex items-center justify-center text-primary hover:bg-white/80 transition-colors shadow-glass-sm">
+        <button className="glass-panel h-10 w-10 rounded-full flex items-center justify-center text-primary hover:bg-white/80 transition-all duration-200 shadow-glass-sm active:scale-95">
           <span className="material-symbols-outlined text-[20px]">add</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="max-w-md bg-white/95 backdrop-blur-xl border border-white/50 rounded-2xl text-slate-900">
+      <DialogContent className="max-w-md bg-white/95 backdrop-blur-xl border border-white/50 rounded-2xl text-slate-900 scale-in">
         <DialogHeader>
           <DialogTitle className="text-slate-900">הוספת איש קשר</DialogTitle>
         </DialogHeader>
@@ -150,28 +149,30 @@ function AddContactDialog({ onSuccess }: { onSuccess: () => void }) {
   );
 }
 
-function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: number) => void }) {
+function ContactCard({ contact, onDelete, index }: { contact: Contact; onDelete: (id: number) => void; index: number }) {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <div
-      className="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-shadow duration-300 cursor-pointer"
+      className="glass-card rounded-2xl p-4 shadow-glass hover:shadow-lg transition-all duration-200 cursor-pointer hover:scale-[1.01] active:scale-[0.99] fade-in-up"
+      style={{ animationDelay: `${index * 40}ms` }}
       onClick={() => setExpanded(!expanded)}
     >
       <div className="flex items-center gap-3">
-        {/* Avatar */}
-        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 p-0.5 shadow-sm shrink-0">
-          <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
-            <span className="text-lg font-bold text-primary/80">{contact.name.charAt(0)}</span>
+        <Link href={`/contacts/${contact.id}`} onClick={e => e.stopPropagation()}>
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 p-0.5 shadow-sm shrink-0">
+            <div className="w-full h-full rounded-full bg-white flex items-center justify-center">
+              <span className="text-lg font-bold text-primary/80">{contact.name.charAt(0)}</span>
+            </div>
           </div>
-        </div>
+        </Link>
         <div className="flex-1 min-w-0">
           <Link
             href={`/contacts/${contact.id}`}
             onClick={e => e.stopPropagation()}
             className="block"
           >
-            <h4 className="text-slate-900 font-bold text-sm truncate hover:text-primary transition-colors">{contact.name}</h4>
+            <h4 className="text-slate-900 font-bold text-sm truncate hover:text-primary transition-colors duration-200">{contact.name}</h4>
           </Link>
           {contact.company && (
             <p className="text-slate-500 text-xs truncate">{contact.company}</p>
@@ -182,14 +183,13 @@ function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: n
             {SOURCE_LABELS[contact.source] || contact.source}
           </span>
         )}
-        {/* WhatsApp quick-send button */}
         {contact.phone && (
           <button
             onClick={(e) => {
               e.stopPropagation();
               window.open('https://wa.me/972' + contact.phone!.replace(/\D/g, '').replace(/^0/, ''), '_blank');
             }}
-            className="h-9 w-9 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 transition-transform shrink-0"
+            className="h-9 w-9 rounded-full bg-[#25D366] flex items-center justify-center text-white shadow-sm hover:scale-110 active:scale-95 transition-transform duration-200 shrink-0"
             title="שלח WhatsApp"
           >
             <span className="material-symbols-outlined text-[18px]">chat</span>
@@ -198,14 +198,9 @@ function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: n
       </div>
 
       {expanded && (
-        <div className="mt-4 space-y-3 pt-3 border-t border-slate-200/50">
-          {/* Contact details */}
+        <div className="mt-4 space-y-3 pt-3 border-t border-slate-200/50 fade-in-up" style={{ animationDelay: '0ms' }}>
           {contact.phone && (
-            <a
-              href={`tel:${contact.phone}`}
-              onClick={e => e.stopPropagation()}
-              className="flex items-center gap-3 group hover:bg-white/40 p-2 -mx-2 rounded-xl transition-colors"
-            >
+            <a href={`tel:${contact.phone}`} onClick={e => e.stopPropagation()} className="flex items-center gap-3 group hover:bg-white/40 p-2 -mx-2 rounded-xl transition-colors duration-200">
               <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-primary">
                 <span className="material-symbols-outlined text-lg">phone_iphone</span>
               </div>
@@ -213,11 +208,7 @@ function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: n
             </a>
           )}
           {contact.email && (
-            <a
-              href={`mailto:${contact.email}`}
-              onClick={e => e.stopPropagation()}
-              className="flex items-center gap-3 group hover:bg-white/40 p-2 -mx-2 rounded-xl transition-colors"
-            >
+            <a href={`mailto:${contact.email}`} onClick={e => e.stopPropagation()} className="flex items-center gap-3 group hover:bg-white/40 p-2 -mx-2 rounded-xl transition-colors duration-200">
               <div className="w-9 h-9 rounded-full bg-blue-50 flex items-center justify-center text-primary">
                 <span className="material-symbols-outlined text-lg">alternate_email</span>
               </div>
@@ -225,54 +216,36 @@ function ContactCard({ contact, onDelete }: { contact: Contact; onDelete: (id: n
             </a>
           )}
 
-          {/* Quick actions */}
           <div className="grid grid-cols-4 gap-2 pt-2">
             {contact.phone && (
-              <a
-                href={`tel:${contact.phone}`}
-                onClick={e => e.stopPropagation()}
-                className="flex flex-col items-center gap-1 group"
-              >
-                <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
+              <a href={`tel:${contact.phone}`} onClick={e => e.stopPropagation()} className="flex flex-col items-center gap-1 group">
+                <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform duration-200">
                   <span className="material-symbols-outlined text-[20px]">call</span>
                 </div>
                 <span className="text-[10px] font-medium text-slate-500">התקשר</span>
               </a>
             )}
             {contact.phone && (
-              <a
-                href={`https://wa.me/${contact.phone.replace(/\D/g, '')}`}
-                onClick={e => e.stopPropagation()}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-col items-center gap-1 group"
-              >
-                <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform">
+              <a href={`https://wa.me/${contact.phone.replace(/\D/g, '')}`} onClick={e => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="flex flex-col items-center gap-1 group">
+                <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-emerald-600 group-hover:scale-110 transition-transform duration-200">
                   <span className="material-symbols-outlined text-[20px]">chat</span>
                 </div>
                 <span className="text-[10px] font-medium text-slate-500">וואטסאפ</span>
               </a>
             )}
             {contact.email && (
-              <a
-                href={`mailto:${contact.email}`}
-                onClick={e => e.stopPropagation()}
-                className="flex flex-col items-center gap-1 group"
-              >
-                <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
+              <a href={`mailto:${contact.email}`} onClick={e => e.stopPropagation()} className="flex flex-col items-center gap-1 group">
+                <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform duration-200">
                   <span className="material-symbols-outlined text-[20px]">mail</span>
                 </div>
                 <span className="text-[10px] font-medium text-slate-500">מייל</span>
               </a>
             )}
             <button
-              onClick={e => {
-                e.stopPropagation();
-                if (confirm(`למחוק את ${contact.name}?`)) onDelete(contact.id);
-              }}
+              onClick={e => { e.stopPropagation(); if (confirm(`למחוק את ${contact.name}?`)) onDelete(contact.id); }}
               className="flex flex-col items-center gap-1 group"
             >
-              <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform">
+              <div className="glass-button w-10 h-10 rounded-full flex items-center justify-center text-red-400 group-hover:scale-110 transition-transform duration-200">
                 <span className="material-symbols-outlined text-[20px]">delete</span>
               </div>
               <span className="text-[10px] font-medium text-slate-500">מחק</span>
@@ -315,7 +288,7 @@ export default function ContactsPage() {
   const contacts = data?.data || [];
 
   return (
-    <div className="pt-8 px-6 pb-24 max-w-md mx-auto">
+    <div className="pt-8 px-2 md:px-0 pb-24 md:pb-8 page-enter">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
@@ -338,25 +311,29 @@ export default function ContactsPage() {
 
       {/* Contact List */}
       {isLoading ? (
-        <div className="flex flex-col gap-3">
-          {[1, 2, 3, 4, 5].map(i => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {[1, 2, 3, 4, 5, 6].map(i => (
             <div key={i} className="h-20 rounded-2xl glass-card animate-pulse" />
           ))}
         </div>
       ) : contacts.length === 0 ? (
         <div className="py-16 text-center">
           <span className="material-symbols-outlined text-slate-300 text-[48px] mb-3 block">groups</span>
-          <p className="text-slate-400">
+          <p className="text-slate-400 text-sm mb-4">
             {search ? 'לא נמצאו תוצאות לחיפוש' : 'אין אנשי קשר עדיין'}
           </p>
+          {!search && (
+            <AddContactDialog onSuccess={() => {}} />
+          )}
         </div>
       ) : (
-        <div className="flex flex-col gap-3">
-          {contacts.map(contact => (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {contacts.map((contact, i) => (
             <ContactCard
               key={contact.id}
               contact={contact}
               onDelete={(id) => deleteMutation.mutate(id)}
+              index={i}
             />
           ))}
         </div>

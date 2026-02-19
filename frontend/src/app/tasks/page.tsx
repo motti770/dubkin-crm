@@ -66,7 +66,7 @@ export default function TasksPage() {
   });
   const { data: dealsData, isLoading: dealsLoading } = useQuery({
     queryKey: ['deals'],
-    queryFn: dealsApi.list,
+    queryFn: () => dealsApi.list(),
   });
 
   const isLoading = activitiesLoading || dealsLoading;

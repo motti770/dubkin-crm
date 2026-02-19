@@ -49,7 +49,7 @@ export default function ContactDetailPage() {
 
   const { data: dealsData, isLoading: dLoading } = useQuery({
     queryKey: ['deals'],
-    queryFn: dealsApi.list,
+    queryFn: () => dealsApi.list(),
   });
 
   const { data: activitiesData, isLoading: aLoading } = useQuery({
