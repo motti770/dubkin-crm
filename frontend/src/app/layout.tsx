@@ -97,10 +97,11 @@ function NewLeadModal({ open, onClose }: { open: boolean; onClose: () => void })
       />
       {/* Bottom Sheet */}
       <div
-        className={`fixed bottom-0 left-0 right-0 max-w-lg mx-auto z-50 bg-white/95 backdrop-blur-xl rounded-t-3xl shadow-2xl border-t border-white/50 ${closing ? 'slide-down' : 'slide-up'}`}
+        className={`fixed bottom-0 inset-x-0 z-50 bg-white/98 backdrop-blur-2xl rounded-t-3xl shadow-2xl border-t border-white/60 ${closing ? 'slide-down' : 'slide-up'}`}
+        style={{ maxHeight: '92dvh' }}
       >
         {/* Scrollable content */}
-        <div className="max-h-[92vh] overflow-y-auto overscroll-contain">
+        <div className="overflow-y-auto overscroll-contain" style={{ maxHeight: '92dvh' }}>
           <div className="p-6">
             {/* Drag handle */}
             <div className="w-10 h-1 rounded-full bg-slate-200 mx-auto mb-5" />
