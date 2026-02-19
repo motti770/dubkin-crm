@@ -75,29 +75,29 @@ export default function DashboardPage() {
       {/* Quick Actions Grid */}
       <section className="px-2 md:px-0 py-4">
         <div className="grid grid-cols-4 gap-3">
-          <Link href="/deals" className="flex flex-col items-center gap-2 group">
+          <Link href="/contacts" className="flex flex-col items-center gap-2 group">
             <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-primary shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">add</span>
+              <span className="material-symbols-outlined">contacts</span>
             </div>
-            <span className="text-xs font-medium text-slate-600">ליד חדש</span>
+            <span className="text-xs font-medium text-slate-600">לקוחות</span>
           </Link>
-          <button className="flex flex-col items-center gap-2 group">
+          <Link href="/deals" className="flex flex-col items-center gap-2 group">
             <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-[#25D366] shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">chat</span>
+              <span className="material-symbols-outlined">handshake</span>
             </div>
-            <span className="text-xs font-medium text-slate-600">וואטסאפ</span>
-          </button>
-          <button className="flex flex-col items-center gap-2 group">
-            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-blue-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">call</span>
-            </div>
-            <span className="text-xs font-medium text-slate-600">שיחה</span>
-          </button>
+            <span className="text-xs font-medium text-slate-600">עסקאות</span>
+          </Link>
           <Link href="/tasks" className="flex flex-col items-center gap-2 group">
             <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-amber-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
-              <span className="material-symbols-outlined">history</span>
+              <span className="material-symbols-outlined">task_alt</span>
             </div>
-            <span className="text-xs font-medium text-slate-600">פולו-אפ</span>
+            <span className="text-xs font-medium text-slate-600">משימות</span>
+          </Link>
+          <Link href="/reports" className="flex flex-col items-center gap-2 group">
+            <div className="glass-panel h-14 w-14 rounded-2xl flex items-center justify-center text-purple-500 shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95">
+              <span className="material-symbols-outlined">analytics</span>
+            </div>
+            <span className="text-xs font-medium text-slate-600">דוחות</span>
           </Link>
         </div>
       </section>
