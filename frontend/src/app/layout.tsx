@@ -48,7 +48,11 @@ function NewLeadModal({ open, onClose }: { open: boolean; onClose: () => void })
     notes: '',
   });
 
-  const STAGES = ['סינון', 'אפיון', 'מכירה'];
+  const STAGES = [
+    { label: 'סינון', emoji: '🔍' },
+    { label: 'אפיון', emoji: '📋' },
+    { label: 'מכירה', emoji: '🤝' },
+  ];
 
   const mutation = useMutation({
     mutationFn: async () => {
@@ -95,99 +99,179 @@ function NewLeadModal({ open, onClose }: { open: boolean; onClose: () => void })
       <div
         className={`fixed bottom-0 left-0 right-0 max-w-lg mx-auto z-50 bg-white/95 backdrop-blur-xl rounded-t-3xl shadow-2xl border-t border-white/50 ${closing ? 'slide-down' : 'slide-up'}`}
       >
-        <div className="p-6">
-          {/* Handle */}
-          <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-6" />
+        {/* Scrollable content */}
+        <div className="max-h-[92vh] overflow-y-auto overscroll-contain">
+          <div className="p-6">
+            {/* Drag handle */}
+            <div className="w-10 h-1 rounded-full bg-slate-200 mx-auto mb-5" />
 
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-slate-900">ליד חדש</h2>
-            <button
-              onClick={handleClose}
-              className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition-colors"
-            >
-              <span className="material-symbols-outlined text-[20px]">close</span>
-            </button>
-          </div>
-
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5">שם *</label>
-              <input
-                value={form.name}
-                onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
-                placeholder="שם מלא"
-                className="w-full h-11 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-              />
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-blue-500 to-primary flex items-center justify-center shadow-md shadow-blue-500/30">
+                  <span className="material-symbols-outlined text-white text-[18px]">person_add</span>
+                </div>
+                <div>
+                  <h2 className="text-lg font-extrabold text-slate-900 leading-tight">ליד חדש</h2>
+                  <p className="text-xs text-slate-400">צור איש קשר + עסקה</p>
+                </div>
+              </div>
+              <button
+                onClick={handleClose}
+                className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5">טלפון</label>
-              <input
-                type="tel"
-                value={form.phone}
-                onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                placeholder="05X-XXXXXXX"
-                dir="ltr"
-                className="w-full h-11 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-              />
-            </div>
+            {/* ── Section: פרטי איש קשר ── */}
+            <div className="mb-1">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="h-px flex-1 bg-slate-100" />
+                <span className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">פרטי איש קשר</span>
+                <span className="h-px flex-1 bg-slate-100" />
+              </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5">שלב</label>
-              <div className="flex gap-2">
-                {STAGES.map(s => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => setForm(f => ({ ...f, stage: s }))}
-                    className={cn(
-                      'flex-1 py-2 rounded-xl text-sm font-semibold transition-all duration-200',
-                      form.stage === s
-                        ? 'bg-primary text-white shadow-lg shadow-primary/30'
-                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                    )}
-                  >
-                    {s}
-                  </button>
-                ))}
+              <div className="space-y-3">
+                {/* Name */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-primary">badge</span>
+                    שם מלא
+                    <span className="text-red-400 text-xs">*</span>
+                  </label>
+                  <input
+                    value={form.name}
+                    onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="ישראל ישראלי"
+                    className="w-full h-12 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all"
+                  />
+                </div>
+
+                {/* WhatsApp phone */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-[#25D366]">chat</span>
+                    WhatsApp
+                  </label>
+                  <div className="flex gap-2 items-center h-12 rounded-2xl bg-slate-50 border border-slate-200 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/30 transition-all overflow-hidden px-4">
+                    <span className="text-lg shrink-0">🇮🇱</span>
+                    <span className="text-slate-400 text-sm shrink-0">+972</span>
+                    <div className="w-px h-5 bg-slate-200 mx-1 shrink-0" />
+                    <input
+                      type="tel"
+                      value={form.phone}
+                      onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
+                      placeholder="05X-XXXXXXX"
+                      dir="ltr"
+                      className="flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 text-sm outline-none min-w-0"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5">ערך עסקה ₪</label>
-              <input
-                type="number"
-                value={form.value}
-                onChange={e => setForm(f => ({ ...f, value: e.target.value }))}
-                placeholder="0"
-                dir="ltr"
-                className="w-full h-11 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-primary/30 transition-all"
-              />
+            {/* ── Section: פרטי עסקה ── */}
+            <div className="mt-5">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="h-px flex-1 bg-slate-100" />
+                <span className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">פרטי עסקה</span>
+                <span className="h-px flex-1 bg-slate-100" />
+              </div>
+
+              <div className="space-y-3">
+                {/* Stage selector — animated pill tabs */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-primary">linear_scale</span>
+                    שלב בצנרת
+                  </label>
+                  <div className="relative flex gap-1 bg-slate-100 rounded-2xl p-1">
+                    {/* Sliding pill indicator */}
+                    <div
+                      className="absolute top-1 bottom-1 rounded-xl bg-gradient-to-r from-blue-500 to-primary shadow-md shadow-blue-500/30 transition-all duration-300"
+                      style={{
+                        width: `calc(${100 / STAGES.length}% - 4px)`,
+                        right: `calc(${STAGES.findIndex(s => s.label === form.stage) * (100 / STAGES.length)}% + 2px)`,
+                      }}
+                    />
+                    {STAGES.map(s => (
+                      <button
+                        key={s.label}
+                        type="button"
+                        onClick={() => setForm(f => ({ ...f, stage: s.label }))}
+                        className={cn(
+                          'relative z-10 flex-1 flex items-center justify-center gap-1 py-2.5 rounded-xl text-xs font-bold transition-colors duration-200',
+                          form.stage === s.label ? 'text-white' : 'text-slate-500 hover:text-slate-700'
+                        )}
+                      >
+                        <span>{s.emoji}</span>
+                        <span>{s.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Deal value */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-primary">payments</span>
+                    ערך עסקה
+                  </label>
+                  <div className="flex items-center h-12 rounded-2xl bg-slate-50 border border-slate-200 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary/30 transition-all overflow-hidden px-4">
+                    <span className="text-slate-400 text-sm font-bold ml-2 shrink-0">₪</span>
+                    <input
+                      type="number"
+                      value={form.value}
+                      onChange={e => setForm(f => ({ ...f, value: e.target.value }))}
+                      placeholder="0"
+                      dir="ltr"
+                      className="flex-1 bg-transparent text-slate-900 placeholder:text-slate-400 text-sm outline-none min-w-0"
+                    />
+                  </div>
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-primary">notes</span>
+                    הערות
+                  </label>
+                  <textarea
+                    value={form.notes}
+                    onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+                    placeholder="הוסף הערות, מידע רלוונטי..."
+                    rows={3}
+                    className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary/30 transition-all resize-none"
+                  />
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-slate-600 mb-1.5">הערות</label>
-              <textarea
-                value={form.notes}
-                onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
-                placeholder="הערות נוספות..."
-                rows={3}
-                className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-primary/30 transition-all resize-none"
-              />
+            {/* Save button */}
+            <div className="mt-6 space-y-2 pb-2">
+              <button
+                onClick={() => mutation.mutate()}
+                disabled={!form.name || mutation.isPending}
+                className="w-full h-12 rounded-2xl bg-gradient-to-r from-blue-500 to-primary text-white font-bold text-base shadow-lg shadow-blue-500/30 flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-blue-500/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+              >
+                {mutation.isPending ? (
+                  <>
+                    <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+                    שומר...
+                  </>
+                ) : (
+                  <>
+                    <span className="material-symbols-outlined text-[20px]">save</span>
+                    שמור ליד
+                  </>
+                )}
+              </button>
+
+              {mutation.isError && (
+                <p className="text-sm text-red-500 text-center">{(mutation.error as Error).message}</p>
+              )}
             </div>
-
-            <button
-              onClick={() => mutation.mutate()}
-              disabled={!form.name || mutation.isPending}
-              className="w-full h-12 rounded-2xl bg-primary text-white font-bold text-base shadow-lg shadow-primary/30 hover:bg-blue-600 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
-            >
-              {mutation.isPending ? 'שומר...' : 'שמור'}
-            </button>
-
-            {mutation.isError && (
-              <p className="text-sm text-red-500 text-center">{(mutation.error as Error).message}</p>
-            )}
           </div>
         </div>
       </div>

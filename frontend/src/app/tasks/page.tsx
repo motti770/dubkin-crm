@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useCallback } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { activitiesApi, dealsApi } from '@/lib/api';
+import { cn } from '@/lib/utils';
 
 interface Task {
   id: number;
@@ -56,9 +57,247 @@ function getTypeIcon(type?: string): string {
   }
 }
 
+// ─── Add Task Modal ───────────────────────────────────────────────────────────
+function AddTaskModal({ open, onClose }: { open: boolean; onClose: () => void }) {
+  const qc = useQueryClient();
+  const [closing, setClosing] = useState(false);
+  const [form, setForm] = useState({
+    description: '',
+    type: 'task',
+    priority: 'normal',
+    time: '',
+    contactName: '',
+    dealTitle: '',
+  });
+
+  const TASK_TYPES = [
+    { value: 'call',    label: 'שיחה',   emoji: '📞' },
+    { value: 'meeting', label: 'פגישה',  emoji: '🤝' },
+    { value: 'note',    label: 'הערה',   emoji: '📝' },
+    { value: 'task',    label: 'משימה',  emoji: '✅' },
+    { value: 'email',   label: 'אימייל', emoji: '📧' },
+  ];
+
+  const PRIORITIES = [
+    { value: 'high',   label: 'גבוה',  emoji: '🔴' },
+    { value: 'normal', label: 'רגיל',  emoji: '🟡' },
+    { value: 'low',    label: 'נמוך',  emoji: '🟢' },
+  ];
+
+  const mutation = useMutation({
+    mutationFn: async () => {
+      await activitiesApi.create({
+        type: form.type,
+        description: form.description || `${TASK_TYPES.find(t => t.value === form.type)?.label} - ${form.contactName || form.dealTitle || 'משימה חדשה'}`,
+      });
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['activities'] });
+      setForm({ description: '', type: 'task', priority: 'normal', time: '', contactName: '', dealTitle: '' });
+      handleClose();
+    },
+  });
+
+  const handleClose = useCallback(() => {
+    setClosing(true);
+    setTimeout(() => {
+      setClosing(false);
+      onClose();
+    }, 250);
+  }, [onClose]);
+
+  if (!open && !closing) return null;
+
+  return (
+    <>
+      {/* Backdrop */}
+      <div
+        className={`fixed inset-0 bg-black/40 backdrop-blur-sm z-50 ${closing ? 'backdrop-exit' : 'backdrop-enter'}`}
+        onClick={handleClose}
+      />
+      {/* Bottom Sheet */}
+      <div
+        className={`fixed bottom-0 left-0 right-0 max-w-lg mx-auto z-50 bg-white/95 backdrop-blur-xl rounded-t-3xl shadow-2xl border-t border-white/50 ${closing ? 'slide-down' : 'slide-up'}`}
+      >
+        <div className="max-h-[92vh] overflow-y-auto overscroll-contain">
+          <div className="p-6">
+            {/* Drag handle */}
+            <div className="w-10 h-1 rounded-full bg-slate-200 mx-auto mb-5" />
+
+            {/* Header */}
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2.5">
+                <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center shadow-md shadow-violet-500/30">
+                  <span className="material-symbols-outlined text-white text-[18px]">add_task</span>
+                </div>
+                <div>
+                  <h2 className="text-lg font-extrabold text-slate-900 leading-tight">משימה חדשה</h2>
+                  <p className="text-xs text-slate-400">הוסף לרשימת הפעילויות</p>
+                </div>
+              </div>
+              <button
+                onClick={handleClose}
+                className="h-9 w-9 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 hover:bg-slate-200 hover:text-slate-600 transition-all"
+              >
+                <span className="material-symbols-outlined text-[20px]">close</span>
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Description */}
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-violet-500">edit_note</span>
+                  תיאור המשימה
+                </label>
+                <textarea
+                  value={form.description}
+                  onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
+                  placeholder="תאר את המשימה..."
+                  rows={3}
+                  className="w-full px-4 py-3 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400/30 transition-all resize-none"
+                />
+              </div>
+
+              {/* Type selector */}
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-2">
+                  <span className="material-symbols-outlined text-[16px] text-violet-500">category</span>
+                  סוג פעילות
+                </label>
+                <div className="flex flex-wrap gap-2">
+                  {TASK_TYPES.map(t => (
+                    <button
+                      key={t.value}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, type: t.value }))}
+                      className={cn(
+                        'flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-semibold transition-all duration-200 border',
+                        form.type === t.value
+                          ? 'bg-violet-500 text-white border-violet-500 shadow-md shadow-violet-500/25'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-violet-300 hover:text-violet-600'
+                      )}
+                    >
+                      <span>{t.emoji}</span>
+                      <span>{t.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Priority selector */}
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-2">
+                  <span className="material-symbols-outlined text-[16px] text-violet-500">flag</span>
+                  עדיפות
+                </label>
+                <div className="flex gap-2">
+                  {PRIORITIES.map(p => (
+                    <button
+                      key={p.value}
+                      type="button"
+                      onClick={() => setForm(f => ({ ...f, priority: p.value }))}
+                      className={cn(
+                        'flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 border',
+                        form.priority === p.value
+                          ? 'bg-slate-800 text-white border-slate-800 shadow-sm'
+                          : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-slate-400'
+                      )}
+                    >
+                      <span>{p.emoji}</span>
+                      <span>{p.label}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <div className="flex items-center gap-2 pt-1">
+                <span className="h-px flex-1 bg-slate-100" />
+                <span className="text-[11px] font-bold text-slate-400 tracking-widest uppercase">פרטים נוספים</span>
+                <span className="h-px flex-1 bg-slate-100" />
+              </div>
+
+              {/* Time */}
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-violet-500">schedule</span>
+                  תאריך ושעה
+                  <span className="text-xs font-normal text-slate-400">(אופציונלי)</span>
+                </label>
+                <input
+                  type="datetime-local"
+                  value={form.time}
+                  onChange={e => setForm(f => ({ ...f, time: e.target.value }))}
+                  dir="ltr"
+                  className="w-full h-12 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400/30 transition-all"
+                />
+              </div>
+
+              {/* Client name */}
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-violet-500">person</span>
+                  שם לקוח
+                </label>
+                <input
+                  value={form.contactName}
+                  onChange={e => setForm(f => ({ ...f, contactName: e.target.value }))}
+                  placeholder="ישראל ישראלי"
+                  className="w-full h-12 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400/30 transition-all"
+                />
+              </div>
+
+              {/* Deal reference */}
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-semibold text-slate-600 mb-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-violet-500">handshake</span>
+                  שם עסקה
+                </label>
+                <input
+                  value={form.dealTitle}
+                  onChange={e => setForm(f => ({ ...f, dealTitle: e.target.value }))}
+                  placeholder="שם העסקה הרלוונטית"
+                  className="w-full h-12 px-4 rounded-2xl bg-slate-50 border border-slate-200 text-slate-900 placeholder:text-slate-400 text-sm outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400/30 transition-all"
+                />
+              </div>
+
+              {/* Save button */}
+              <div className="pt-1 pb-2">
+                <button
+                  onClick={() => mutation.mutate()}
+                  disabled={mutation.isPending}
+                  className="w-full h-12 rounded-2xl bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold text-base shadow-lg shadow-violet-500/30 flex items-center justify-center gap-2 hover:shadow-xl hover:shadow-violet-500/40 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
+                >
+                  {mutation.isPending ? (
+                    <>
+                      <span className="material-symbols-outlined text-[20px] animate-spin">progress_activity</span>
+                      שומר...
+                    </>
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-[20px]">add_task</span>
+                      הוסף משימה
+                    </>
+                  )}
+                </button>
+                {mutation.isError && (
+                  <p className="text-sm text-red-500 text-center mt-2">{(mutation.error as Error).message}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─── Tasks Page ───────────────────────────────────────────────────────────────
 export default function TasksPage() {
   const [filter, setFilter] = useState('');
   const [completedIds, setCompletedIds] = useState<Set<number>>(new Set());
+  const [addTaskOpen, setAddTaskOpen] = useState(false);
 
   const { data: activitiesData, isLoading: activitiesLoading } = useQuery({
     queryKey: ['activities'],
@@ -127,6 +366,15 @@ export default function TasksPage() {
 
   return (
     <div className="relative flex min-h-screen w-full flex-col page-enter">
+      {/* Add Task FAB */}
+      <button
+        onClick={() => setAddTaskOpen(true)}
+        className="fixed bottom-28 left-5 md:bottom-10 md:left-10 z-40 h-14 w-14 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 text-white shadow-lg shadow-violet-500/40 flex items-center justify-center hover:scale-105 active:scale-95 transition-transform duration-200 border-4 border-white"
+        title="הוסף משימה"
+      >
+        <span className="material-symbols-outlined text-[28px]">add</span>
+      </button>
+      <AddTaskModal open={addTaskOpen} onClose={() => setAddTaskOpen(false)} />
       {/* Header */}
       <header className="sticky top-0 z-20 px-2 md:px-0 pt-8 pb-4">
         <div className="flex items-center justify-between mb-6 md:hidden">
