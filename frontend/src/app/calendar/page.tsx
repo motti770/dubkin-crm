@@ -169,8 +169,11 @@ export default function CalendarPage() {
           {selectedDay && (
             <div className="fade-in-up">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-base font-bold text-slate-800">
-                  {selectedDay} {HEBREW_MONTHS[currentMonth]}
+                <h3 className="text-base font-bold text-slate-800 flex items-center gap-2">
+                  {new Date(currentYear, currentMonth, selectedDay).toLocaleDateString('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })}
+                  {isToday(selectedDay) && (
+                    <span className="text-xs font-normal text-primary bg-blue-50 px-2 py-0.5 rounded-full">היום</span>
+                  )}
                 </h3>
                 <span className="text-xs text-slate-400">{selectedActivities.length} פעילויות</span>
               </div>
