@@ -22,6 +22,7 @@ const sidebarItems: NavItem[] = [
   { href: '/pipeline',  label: 'פייפליין',   icon: 'view_kanban' },
   { href: '/contacts',  label: 'אנשי קשר',  icon: 'contacts' },
   { href: '/deals',     label: 'עסקאות',     icon: 'handshake' },
+  { href: '/marketing', label: 'שיווק',      icon: 'campaign' },
   { href: '/tasks',     label: 'משימות',     icon: 'task_alt' },
   { href: '/calendar',  label: 'יומן',       icon: 'calendar_month' },
   { href: '/reports',   label: 'דוחות',      icon: 'analytics' },

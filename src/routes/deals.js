@@ -59,7 +59,7 @@ router.get('/:id', async (req, res) => {
 // POST /deals
 router.post('/', async (req, res) => {
   try {
-    const { contact_id, stage_id, name, value, product_id, notes, expected_close } = req.body;
+    const { contact_id, stage_id, name, value, product_id, notes, expected_close, plan_type, lead_source } = req.body;
     if (!name) return res.status(400).json({ error: 'name is required' });
 
     // Default to first stage if not provided
@@ -70,9 +70,9 @@ router.post('/', async (req, res) => {
     }
 
     const { rows } = await db.query(
-      `INSERT INTO deals (contact_id, stage_id, name, value, product_id, notes, expected_close)
-       VALUES ($1,$2,$3,$4,$5,$6,$7) RETURNING *`,
-      [contact_id, stageId, name, value || 0, product_id, notes, expected_close]
+      `INSERT INTO deals (contact_id, stage_id, name, value, product_id, notes, expected_close, plan_type, lead_source)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
+      [contact_id, stageId, name, value || 0, product_id, notes, expected_close, plan_type || 'managed', lead_source]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -83,13 +83,14 @@ router.post('/', async (req, res) => {
 // PUT /deals/:id
 router.put('/:id', async (req, res) => {
   try {
-    const { contact_id, stage_id, name, value, product_id, notes, expected_close } = req.body;
+    const { contact_id, stage_id, name, value, product_id, notes, expected_close, plan_type, lead_source } = req.body;
     const { rows } = await db.query(
       `UPDATE deals SET
          contact_id=$1, stage_id=$2, name=$3, value=$4,
-         product_id=$5, notes=$6, expected_close=$7
-       WHERE id=$8 RETURNING *`,
-      [contact_id, stage_id, name, value, product_id, notes, expected_close, req.params.id]
+         product_id=$5, notes=$6, expected_close=$7,
+         plan_type=$8, lead_source=$9
+       WHERE id=$10 RETURNING *`,
+      [contact_id, stage_id, name, value, product_id, notes, expected_close, plan_type, lead_source, req.params.id]
     );
     if (!rows.length) return res.status(404).json({ error: 'Deal not found' });
     res.json(rows[0]);
@@ -111,10 +112,10 @@ router.patch('/:id/stage', async (req, res) => {
     }
     if (!targetStageId) return res.status(400).json({ error: 'stage_name or stage_id required' });
 
-    // If moving to active/archive, record closed_at
+    // If moving to onboarding or beyond, record closed_at (deal is won)
     const { rows: stageRows } = await db.query(`SELECT name FROM pipeline_stages WHERE id=$1`, [targetStageId]);
     const stageName = stageRows[0]?.name;
-    const closedAt  = ['active', 'archive'].includes(stageName) ? 'NOW()' : 'NULL';
+    const closedAt  = ['onboarding', 'active', 'renewal', 'archive'].includes(stageName) ? 'NOW()' : 'NULL';
 
     const { rows } = await db.query(
       `UPDATE deals SET stage_id=$1, closed_at=${closedAt} WHERE id=$2 RETURNING *`,

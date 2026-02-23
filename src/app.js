@@ -13,6 +13,7 @@ const dealsRouter      = require('./routes/deals');
 const activitiesRouter = require('./routes/activities');
 const pipelineRouter   = require('./routes/pipeline');
 const followUpsRouter  = require('./routes/follow-ups');
+const marketingRouter  = require('./routes/marketing');
 
 const app  = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.use('/deals',      adminOnly, dealsRouter);
 app.use('/activities', adminOnly, activitiesRouter);
 app.use('/pipeline',   adminOnly, pipelineRouter);
 app.use('/follow-ups', adminOnly, followUpsRouter);
+app.use('/marketing',  adminOnly, marketingRouter);
 
 // ─── 404 ──────────────────────────────────────────────────────────────────────
 app.use((_req, res) => {

@@ -39,7 +39,7 @@ export default function DealDetailPage() {
   const [activityForm, setActivityForm] = useState({ type: 'note', description: '' });
   const [addingActivity, setAddingActivity] = useState(false);
   const [editing, setEditing] = useState(false);
-  const [editForm, setEditForm] = useState({ name: '', value: '', notes: '' });
+  const [editForm, setEditForm] = useState({ name: '', value: '', notes: '', plan_type: 'managed', lead_source: '' });
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Fetch deal from list (to get joined fields like contact_name, stage_display)
@@ -94,6 +94,8 @@ export default function DealDetailPage() {
       name: deal.name || deal.title || '',
       value: deal.value?.toString() || '',
       notes: deal.notes || '',
+      plan_type: deal.plan_type || 'managed',
+      lead_source: deal.lead_source || '',
     });
     setEditing(true);
   };
@@ -103,6 +105,8 @@ export default function DealDetailPage() {
       name: editForm.name,
       value: editForm.value ? parseFloat(editForm.value) : undefined,
       notes: editForm.notes,
+      plan_type: editForm.plan_type as 'managed' | 'self',
+      lead_source: editForm.lead_source,
     }),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['deals'] });
@@ -165,8 +169,8 @@ export default function DealDetailPage() {
                 )}
               </div>
 
-              <span className={cn('text-xs px-3 py-1 rounded-full border inline-block', STAGE_PILL[deal.stage_display] || STAGE_PILL['ארכיון'])}>
-                {deal.stage_display}
+              <span className={cn('text-xs px-3 py-1 rounded-full border inline-block', STAGE_PILL[deal.stage_display || deal.stage] || STAGE_PILL['ארכיון'])}>
+                {deal.stage_display || deal.stage}
               </span>
 
               <div className="flex items-center gap-4 text-xs text-slate-400 mt-3">
@@ -360,6 +364,17 @@ export default function DealDetailPage() {
                 <div>
                   <label className="text-xs text-slate-500 font-medium">שווי (₪)</label>
                   <input type="number" value={editForm.value} onChange={e => setEditForm(f => ({ ...f, value: e.target.value }))} dir="ltr" className="w-full h-10 rounded-xl bg-white/60 border border-slate-200 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" />
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 font-medium">מסלול</label>
+                  <select value={editForm.plan_type} onChange={e => setEditForm(f => ({ ...f, plan_type: e.target.value }))} className="w-full h-10 rounded-xl bg-white/60 border border-slate-200 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all">
+                    <option value="managed">💼 Managed — מנוהל מלא</option>
+                    <option value="self">🔧 Self — הקמה + תמיכה לפי שעה</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-slate-500 font-medium">מאיפה הגיע הליד</label>
+                  <input value={editForm.lead_source} onChange={e => setEditForm(f => ({ ...f, lead_source: e.target.value }))} placeholder="לדוג׳: WhatsApp, פה לאוזן, אינסטגרם..." className="w-full h-10 rounded-xl bg-white/60 border border-slate-200 px-3 text-sm text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary/30 transition-all" />
                 </div>
                 <div>
                   <label className="text-xs text-slate-500 font-medium">הערות</label>

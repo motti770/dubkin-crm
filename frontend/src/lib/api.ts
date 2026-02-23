@@ -73,17 +73,19 @@ export interface Contact {
 
 export interface Deal {
   id: number;
-  name: string;        // deal title
-  title?: string;      // alias (may not exist)
+  title: string;
+  name?: string;           // alias for title (DB column name)
   contact_id?: number;
   contact_name?: string;
   contact_phone?: string;
-  value?: string | number;
-  stage_display: string;  // Hebrew: סינון, אפיון, etc.
-  stage_name?: string;    // internal: lead, etc.
-  stage?: string;         // alias
+  value?: number;
+  stage: string;
   stage_id?: number;
+  stage_display: string;  // display name for stage
   notes?: string;
+  expected_close?: string;
+  plan_type?: 'managed' | 'self';   // מסלול: מנוהל / עצמאי
+  lead_source?: string;             // מאיפה הגיע הליד
   created_at: string;
   updated_at: string;
 }
@@ -96,22 +98,14 @@ export interface Activity {
   contact_name?: string;
   type: string;
   description: string;
+  completed?: boolean;
   created_at: string;
-}
-
-export interface StageInfo {
-  id: number;
-  name: string;
-  display_name: string;
-  position: number;
-  color: string;
+  occurred_at?: string;
 }
 
 export interface PipelineStage {
-  stage: StageInfo;
+  stage: string;
   deals: Deal[];
-  deal_count: number;
-  total_value: string;
 }
 
 // ─── Contacts ─────────────────────────────────────────────────────────────────
@@ -120,7 +114,6 @@ export const contactsApi = {
     fetchApi<{ data: Contact[]; total: number }>(
       `/contacts${search ? `?search=${encodeURIComponent(search)}` : ''}`
     ),
-  get: (id: number) => fetchApi<Contact>(`/contacts/${id}`),
   create: (data: Partial<Contact>) =>
     fetchApi<Contact>('/contacts', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: Partial<Contact>) =>
@@ -131,24 +124,62 @@ export const contactsApi = {
 
 // ─── Deals ────────────────────────────────────────────────────────────────────
 export const dealsApi = {
-  list: (params?: { contact_id?: number }) =>
-    fetchApi<{ data: Deal[]; total: number }>(
-      `/deals${params?.contact_id ? `?contact_id=${params.contact_id}` : ''}`
-    ),
-  get: (id: number) => fetchApi<Deal>(`/deals/${id}`),
+  list: () => fetchApi<{ data: Deal[]; total: number }>('/deals'),
   create: (data: Partial<Deal>) =>
     fetchApi<Deal>('/deals', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: Partial<Deal>) =>
     fetchApi<Deal>(`/deals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
   updateStage: (id: number, stage: string) =>
-    fetchApi<Deal>(`/deals/${id}/stage`, { method: 'PATCH', body: JSON.stringify({ stage_name: stage }) }),
+    fetchApi<Deal>(`/deals/${id}/stage`, { method: 'PATCH', body: JSON.stringify({ stage }) }),
   delete: (id: number) =>
     fetchApi<{ success: boolean }>(`/deals/${id}`, { method: 'DELETE' }),
 };
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 export const pipelineApi = {
-  get: () => fetchApi<{ pipeline: PipelineStage[]; summary: unknown }>('/pipeline').then(d => d.pipeline),
+  get: () => fetchApi<PipelineStage[]>('/pipeline'),
+};
+
+// ─── Marketing ───────────────────────────────────────────────────────────────
+export interface MarketingChannel {
+  id: number;
+  name: string;
+  display_name: string;
+  description: string;
+  icon: string;
+  status: 'active' | 'paused' | 'inactive';
+  total_activities?: number;
+  leads_count?: number;
+  activities_this_week?: number;
+  last_activity?: string;
+}
+
+export interface ChannelActivity {
+  id: number;
+  channel_id: number;
+  type: string;
+  description: string;
+  result: 'pending' | 'lead' | 'no_response' | 'not_relevant' | 'success';
+  contact_id?: number;
+  contact_name?: string;
+  deal_id?: number;
+  deal_name?: string;
+  occurred_at: string;
+}
+
+export const marketingApi = {
+  list: () => fetchApi<{ channels: MarketingChannel[]; channel_leads: any[] }>('/marketing'),
+  get: (id: number) => fetchApi<{ channel: MarketingChannel; activities: ChannelActivity[] }>(`/marketing/${id}`),
+  addActivity: (channelId: number, data: Partial<ChannelActivity>) =>
+    fetchApi<ChannelActivity>(`/marketing/${channelId}/activities`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+  updateActivity: (activityId: number, data: { result?: string; description?: string }) =>
+    fetchApi<ChannelActivity>(`/marketing/activities/${activityId}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
 };
 
 // ─── Activities ───────────────────────────────────────────────────────────────
@@ -159,4 +190,9 @@ export const activitiesApi = {
     ),
   create: (data: { deal_id?: number; contact_id?: number; type: string; description: string }) =>
     fetchApi<Activity>('/activities', { method: 'POST', body: JSON.stringify(data) }),
+  completeTask: (id: number, completed: boolean) =>
+    fetchApi<Activity>(`/activities/${id}/complete`, {
+      method: 'PATCH',
+      body: JSON.stringify({ completed }),
+    }),
 };
