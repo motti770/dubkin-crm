@@ -2,7 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { followUpsApi } from '@/lib/api';
 import { formatCurrency } from '@/lib/utils';
+import Link from 'next/link';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -188,6 +190,15 @@ export default function DashboardPage() {
 
   const tasks = tasksData?.data || [];
 
+  // ── Follow-ups ──
+  const { data: fuData } = useQuery({
+    queryKey: ['follow-ups', 'pending'],
+    queryFn: () => followUpsApi.list({ status: 'pending' }),
+  });
+  const overdueFollowUps = (fuData?.data || []).filter(
+    (f) => new Date(f.due_date) < new Date()
+  );
+
   // ── Hardcoded goals ──
   const goals = [
     { emoji: '💰', label: 'הכנסה חודשית', current: 0, target: 83333, format: formatCurrency },
@@ -213,6 +224,74 @@ export default function DashboardPage() {
           </div>
         </div>
       </header>
+
+      {/* ─── Quick Shortcuts ─── */}
+      <section className="px-2 md:px-0 py-4">
+        <div className="flex gap-4 overflow-x-auto no-scrollbar pb-1">
+          {[
+            { href: '/contacts', icon: 'contacts',       label: 'לקוחות',   color: 'text-primary' },
+            { href: '/deals',    icon: 'handshake',      label: 'עסקאות',   color: 'text-emerald-500' },
+            { href: '/pipeline', icon: 'view_kanban',    label: 'פייפליין', color: 'text-blue-500' },
+            { href: '/tasks',    icon: 'task_alt',       label: 'משימות',   color: 'text-amber-500' },
+            { href: '/calendar', icon: 'calendar_month', label: 'יומן',     color: 'text-rose-500' },
+            { href: '/reports',  icon: 'analytics',      label: 'דוחות',    color: 'text-purple-500' },
+            { href: '/chat',     icon: 'forum',          label: 'צ׳אט',     color: 'text-teal-500' },
+          ].map(({ href, icon, label, color }) => (
+            <Link key={href} href={href} className="flex flex-col items-center gap-2 group shrink-0">
+              <div className={`glass-panel h-14 w-14 rounded-2xl flex items-center justify-center ${color} shadow-glass-sm group-hover:bg-white transition-all duration-200 transform group-hover:scale-105 group-active:scale-95`}>
+                <span className="material-symbols-outlined">{icon}</span>
+              </div>
+              <span className="text-xs font-medium text-slate-600 whitespace-nowrap">{label}</span>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* ─── Follow-ups (מחכים לך) ─── */}
+      <section className="px-4 md:px-0 pb-4">
+        {overdueFollowUps.length > 0 ? (
+          <>
+            <h2 className="text-lg font-bold text-red-600 flex items-center gap-2 mb-3">
+              <span className="material-symbols-outlined text-[20px]">notification_important</span>
+              מחכים לך ({overdueFollowUps.length} אנשים) 🔴
+            </h2>
+            <div className="space-y-2">
+              {overdueFollowUps.map((fu, i) => {
+                const daysDiff = Math.floor(
+                  (Date.now() - new Date(fu.due_date).getTime()) / (1000 * 60 * 60 * 24)
+                );
+                return (
+                  <Link
+                    key={fu.id}
+                    href={fu.deal_id ? `/deals/${fu.deal_id}` : '#'}
+                    className="flex items-center gap-3 glass-panel rounded-xl px-4 py-3 hover:shadow-md transition-all duration-200 hover:scale-[1.01] active:scale-[0.99] fade-in-up"
+                    style={{ animationDelay: `${i * 60}ms` }}
+                  >
+                    <div className="h-9 w-9 rounded-full bg-red-100 flex items-center justify-center text-red-500 shrink-0">
+                      <span className="material-symbols-outlined text-[18px]">person</span>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-slate-900 truncate">
+                        {fu.contact_name || 'ללא איש קשר'}
+                      </p>
+                      {fu.deal_name && (
+                        <p className="text-xs text-slate-500 truncate">{fu.deal_name}</p>
+                      )}
+                    </div>
+                    <span className="text-xs font-semibold text-red-500 shrink-0">
+                      לפני {daysDiff} ימים
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
+          </>
+        ) : fuData ? (
+          <div className="glass-panel rounded-2xl flex items-center justify-center py-6 gap-2">
+            <span className="text-emerald-500 font-bold text-sm">הכל מסודר 🎉</span>
+          </div>
+        ) : null}
+      </section>
 
       {/* ─── Goals / Progress Bars ─── */}
       <section className="px-4 md:px-0 pb-4 space-y-3">

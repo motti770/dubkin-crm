@@ -201,6 +201,27 @@ export const marketingApi = {
     }),
 };
 
+// ─── Follow-ups ──────────────────────────────────────────────────────────────
+export interface FollowUp {
+  id: number;
+  deal_id?: number;
+  contact_id?: number;
+  due_date: string;
+  type?: string;
+  notes?: string;
+  status: string;
+  deal_name?: string;
+  contact_name?: string;
+  contact_phone?: string;
+}
+
+export const followUpsApi = {
+  list: (params?: { status?: string }) =>
+    fetchApi<{ data: FollowUp[]; total: number }>(
+      `/follow-ups${params?.status ? `?status=${params.status}` : ''}`
+    ),
+};
+
 // ─── Activities ───────────────────────────────────────────────────────────────
 export const activitiesApi = {
   list: (dealId?: number) =>
