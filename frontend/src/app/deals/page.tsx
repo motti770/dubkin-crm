@@ -247,32 +247,32 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}
-          className="p-2 rounded-xl hover:bg-white/10 text-white/40 hover:text-white transition-colors"
+          className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors"
         >
           <ChevronLeft size={18} />
         </button>
         <div className="flex-1">
-          <h1 className="text-xl font-black text-white">{deal.title}</h1>
+          <h1 className="text-xl font-black text-slate-900">{deal.title}</h1>
           {deal.contact_name && (
-            <p className="text-sm text-white/50">{deal.contact_name}</p>
+            <p className="text-sm text-slate-500">{deal.contact_name}</p>
           )}
         </div>
       </div>
 
       {/* Deal Info Card */}
-      <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="glass-panel rounded-2xl p-5 space-y-4">
         <div className="flex items-center justify-between">
           <span className={cn('text-xs px-3 py-1 rounded-full border', STAGE_PILL[deal.stage] || STAGE_PILL['ארכיון'])}>
             {deal.stage}
           </span>
           {deal.value != null && (
-            <span className="text-2xl font-black text-emerald-300">{formatCurrency(deal.value)}</span>
+            <span className="text-2xl font-black text-emerald-600">{formatCurrency(Number(deal.value) || 0)}</span>
           )}
         </div>
 
         {/* Change Stage */}
         <div>
-          <p className="text-xs text-white/40 mb-2">שנה שלב</p>
+          <p className="text-xs text-slate-400 mb-2">שנה שלב</p>
           <div className="flex flex-wrap gap-1.5">
             {STAGES.filter(s => s !== deal.stage).map(stage => (
               <button
@@ -291,25 +291,25 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
           </div>
         </div>
 
-        <div className="flex items-center gap-6 text-xs text-white/40">
+        <div className="flex items-center gap-6 text-xs text-slate-400">
           <span>נוצר {formatDate(deal.created_at)}</span>
         </div>
 
         {deal.notes && (
           <div>
-            <p className="text-xs text-white/40 mb-1">הערות</p>
-            <p className="text-sm text-white/70 whitespace-pre-wrap">{deal.notes}</p>
+            <p className="text-xs text-slate-400 mb-1">הערות</p>
+            <p className="text-sm text-slate-600 whitespace-pre-wrap">{deal.notes}</p>
           </div>
         )}
       </div>
 
       {/* Activities Section */}
-      <div className="glass rounded-2xl p-5 space-y-4">
+      <div className="glass-panel rounded-2xl p-5 space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-white">לוג פעילות</h2>
+          <h2 className="text-base font-bold text-slate-900">לוג פעילות</h2>
           <button
             onClick={() => setAddingActivity(!addingActivity)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-500/20 text-blue-300 text-xs font-medium hover:bg-blue-500/30 border border-blue-500/20 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-600 text-xs font-medium hover:bg-blue-100 border border-blue-200 transition-colors"
           >
             <Plus size={13} />
             הוסף
@@ -318,7 +318,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
 
         {/* Add activity form */}
         {addingActivity && (
-          <div className="bg-[rgba(255,255,255,0.04)] rounded-xl p-4 space-y-3 border border-white/5">
+          <div className="bg-white/60 rounded-xl p-4 space-y-3 border border-slate-100">
             <div className="flex gap-2 flex-wrap">
               {ACTIVITY_TYPES.map(({ value, label, emoji }) => (
                 <button
@@ -327,8 +327,8 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
                   className={cn(
                     'flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full border transition-all',
                     activityForm.type === value
-                      ? 'border-blue-500/40 bg-blue-500/20 text-blue-300'
-                      : 'border-white/10 text-white/50 hover:bg-white/10'
+                      ? 'border-blue-400 bg-blue-50 text-blue-600'
+                      : 'border-slate-200 text-slate-500 hover:bg-slate-50'
                   )}
                 >
                   <span>{emoji}</span>
@@ -341,7 +341,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
                 value={activityForm.description}
                 onChange={e => setActivityForm(f => ({ ...f, description: e.target.value }))}
                 placeholder={activityForm.type === 'task' ? 'תיאור המשימה...' : 'תיאור הפעילות...'}
-                className="flex-1 h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
+                className="flex-1 h-10 rounded-xl bg-white/60 border border-slate-200 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500/50 transition-colors"
                 onKeyDown={e => {
                   if (e.key === 'Enter' && activityForm.description) activityMutation.mutate();
                 }}
@@ -364,13 +364,13 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
         {actLoading ? (
           <div className="space-y-3">
             {[1,2,3].map(i => (
-              <div key={i} className="h-14 rounded-xl bg-white/4 animate-pulse" />
+              <div key={i} className="h-14 rounded-xl bg-slate-100 animate-pulse" />
             ))}
           </div>
         ) : activities.length === 0 ? (
           <div className="text-center py-10">
-            <MessageSquare size={32} className="mx-auto text-white/10 mb-2" />
-            <p className="text-sm text-white/30">אין פעילות עדיין</p>
+            <MessageSquare size={32} className="mx-auto text-slate-200 mb-2" />
+            <p className="text-sm text-slate-300">אין פעילות עדיין</p>
           </div>
         ) : (
           <div className="space-y-2">
@@ -384,8 +384,8 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
                   className={cn(
                     'flex items-start gap-3 rounded-xl p-3 transition-colors',
                     isTask && isDone
-                      ? 'bg-emerald-500/10 border border-emerald-500/20'
-                      : 'bg-[rgba(255,255,255,0.04)] hover:bg-white/[0.06]'
+                      ? 'bg-emerald-50 border border-emerald-200'
+                      : 'bg-white/60 hover:bg-white/80'
                   )}
                 >
                   {isTask ? (
@@ -396,7 +396,7 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
                         'mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-all',
                         isDone
                           ? 'bg-emerald-500 border-emerald-500 text-white'
-                          : 'border-white/30 hover:border-blue-400'
+                          : 'border-slate-300 hover:border-blue-400'
                       )}
                     >
                       {isDone && <span className="text-xs font-bold">✓</span>}
@@ -407,11 +407,11 @@ function DealDetail({ deal, onBack }: { deal: Deal; onBack: () => void }) {
                   <div className="flex-1 min-w-0">
                     <p className={cn(
                       'text-sm',
-                      isTask && isDone ? 'line-through text-white/40' : 'text-white/80'
+                      isTask && isDone ? 'line-through text-slate-400' : 'text-slate-700'
                     )}>
                       {activity.description}
                     </p>
-                    <p className="text-xs text-white/30 mt-0.5">
+                    <p className="text-xs text-slate-300 mt-0.5">
                       {formatDateTime(activity.created_at)}
                     </p>
                   </div>
@@ -440,7 +440,7 @@ export default function DealsPage() {
 
   const totalPipeline = allDeals
     .filter(d => d.stage !== 'ארכיון')
-    .reduce((sum, d) => sum + (d.value || 0), 0);
+    .reduce((sum, d) => sum + (Number(d.value) || 0), 0);
 
   if (selectedDeal) {
     const currentDeal = allDeals.find(d => d.id === selectedDeal.id) || selectedDeal;
@@ -453,16 +453,16 @@ export default function DealsPage() {
       {/* Header */}
       <div className="flex items-center justify-between pt-2">
         <div>
-          <h1 className="text-2xl font-black text-white">עסקאות</h1>
-          <p className="text-blue-300/50 text-xs mt-1">{data?.total ?? 0} עסקאות במערכת</p>
+          <h1 className="text-2xl font-black text-slate-900">עסקאות</h1>
+          <p className="text-slate-500 text-xs mt-1">{data?.total ?? 0} עסקאות במערכת</p>
         </div>
         <AddDealDialog onSuccess={() => {}} />
       </div>
 
       {/* Summary Bar */}
-      <div className="glass rounded-2xl p-4 flex items-center justify-between">
-        <span className="text-xs text-white/50">סה״כ פייפליין</span>
-        <span className="text-xl font-black text-emerald-300">{formatCurrency(totalPipeline)}</span>
+      <div className="glass-panel rounded-2xl p-4 flex items-center justify-between">
+        <span className="text-xs text-slate-500">סה״כ פייפליין</span>
+        <span className="text-xl font-black text-emerald-600">{formatCurrency(totalPipeline)}</span>
       </div>
 
       {/* Stage filter */}
@@ -472,8 +472,8 @@ export default function DealsPage() {
           className={cn(
             'text-xs px-3 py-1.5 rounded-full border transition-all',
             !stageFilter
-              ? 'border-blue-500/40 bg-blue-500/20 text-blue-300'
-              : 'border-white/10 text-white/40 hover:bg-white/10'
+              ? 'border-blue-400 bg-blue-50 text-blue-600'
+              : 'border-slate-200 text-slate-400 hover:bg-slate-50'
           )}
         >
           הכל
@@ -488,7 +488,7 @@ export default function DealsPage() {
                 'text-xs px-3 py-1.5 rounded-full border transition-all',
                 stageFilter === stage
                   ? STAGE_PILL[stage]
-                  : 'border-white/10 text-white/40 hover:bg-white/10'
+                  : 'border-slate-200 text-slate-400 hover:bg-slate-50'
               )}
             >
               {stage} {count > 0 && <span className="opacity-60">({count})</span>}
@@ -501,13 +501,13 @@ export default function DealsPage() {
       {isLoading ? (
         <div className="space-y-3">
           {[1,2,3,4].map(i => (
-            <div key={i} className="h-20 rounded-2xl bg-white/[0.03] border border-white/5 animate-pulse" />
+            <div key={i} className="h-20 rounded-2xl bg-slate-100 border border-slate-100 animate-pulse" />
           ))}
         </div>
       ) : deals.length === 0 ? (
         <div className="text-center py-16">
-          <Handshake size={48} className="mx-auto text-white/10 mb-3" />
-          <p className="text-white/30">אין עסקאות</p>
+          <Handshake size={48} className="mx-auto text-slate-200 mb-3" />
+          <p className="text-slate-300">אין עסקאות</p>
         </div>
       ) : (
         <div className="space-y-2">
@@ -515,26 +515,26 @@ export default function DealsPage() {
             <div
               key={deal.id}
               onClick={() => setSelectedDeal(deal)}
-              className="flex items-center justify-between bg-[rgba(255,255,255,0.06)] border border-white/10 rounded-2xl p-4 hover:bg-white/10 transition-all cursor-pointer group"
+              className="flex items-center justify-between bg-white/70 border border-slate-200 rounded-2xl p-4 hover:bg-white/90 transition-all cursor-pointer group"
             >
               <div className="flex items-center gap-3">
                 <span className={cn('text-[11px] px-2.5 py-1 rounded-full border whitespace-nowrap', STAGE_PILL[deal.stage] || STAGE_PILL['ארכיון'])}>
                   {deal.stage}
                 </span>
                 <div>
-                  <p className="text-sm font-bold text-white">{deal.title}</p>
+                  <p className="text-sm font-bold text-slate-900">{deal.title}</p>
                   {deal.contact_name && (
-                    <p className="text-xs text-white/50">{deal.contact_name}</p>
+                    <p className="text-xs text-slate-500">{deal.contact_name}</p>
                   )}
                 </div>
               </div>
               <div className="flex items-center gap-4">
                 {deal.value ? (
-                  <span className="text-sm font-black text-emerald-300">
-                    {formatCurrency(deal.value)}
+                  <span className="text-sm font-black text-emerald-600">
+                    {formatCurrency(Number(deal.value) || 0)}
                   </span>
                 ) : null}
-                <ChevronLeft size={16} className="text-white/30 group-hover:text-white/60 transition-colors" />
+                <ChevronLeft size={16} className="text-slate-300 group-hover:text-slate-500 transition-colors" />
               </div>
             </div>
           ))}
