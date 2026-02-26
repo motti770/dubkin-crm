@@ -7,7 +7,7 @@ import { dealsApi, activitiesApi, Deal } from '@/lib/api';
 import { formatCurrency, formatDate, formatDateTime, cn } from '@/lib/utils';
 import Link from 'next/link';
 
-const STAGES = ['סינון', 'אפיון', 'מכירה', 'סגירה', 'לקוח פעיל', 'ארכיון'];
+const STAGES = ['ליד', 'סינון', 'הדגמה', 'Onboarding', 'לקוח פעיל', 'חידוש / Upsell', 'ארכיון'];
 
 const STAGE_PILL: Record<string, string> = {
   'סינון':      'bg-slate-100 text-slate-600 border-slate-200',

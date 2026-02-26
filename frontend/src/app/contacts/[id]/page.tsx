@@ -257,8 +257,8 @@ export default function ContactDetailPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-slate-900 font-semibold text-sm truncate">{deal.name || deal.title || ''}</p>
-                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display)}`}>
-                        {deal.stage_display}
+                      <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${getStageBadge(deal.stage_display || deal.stage)}`}>
+                        {deal.stage_display || deal.stage}
                       </span>
                     </div>
                     {deal.value && (

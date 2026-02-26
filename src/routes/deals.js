@@ -106,7 +106,7 @@ router.patch('/:id/stage', async (req, res) => {
 
     let targetStageId = stage_id;
     if (!targetStageId && stage_name) {
-      const { rows } = await db.query(`SELECT id FROM pipeline_stages WHERE name=$1`, [stage_name]);
+      const { rows } = await db.query(`SELECT id FROM pipeline_stages WHERE name=$1 OR display_name=$1`, [stage_name]);
       if (!rows.length) return res.status(400).json({ error: `Stage '${stage_name}' not found` });
       targetStageId = rows[0].id;
     }

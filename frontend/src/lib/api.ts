@@ -103,9 +103,19 @@ export interface Activity {
   occurred_at?: string;
 }
 
+export interface PipelineStageInfo {
+  id: number;
+  name: string;
+  display_name: string;
+  position: number;
+  color: string;
+}
+
 export interface PipelineStage {
-  stage: string;
+  stage: PipelineStageInfo;
   deals: Deal[];
+  deal_count: number;
+  total_value: number;
 }
 
 // ─── Contacts ─────────────────────────────────────────────────────────────────
@@ -129,15 +139,24 @@ export const dealsApi = {
     fetchApi<Deal>('/deals', { method: 'POST', body: JSON.stringify(data) }),
   update: (id: number, data: Partial<Deal>) =>
     fetchApi<Deal>(`/deals/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-  updateStage: (id: number, stage: string) =>
-    fetchApi<Deal>(`/deals/${id}/stage`, { method: 'PATCH', body: JSON.stringify({ stage }) }),
+  updateStage: (id: number, stageIdOrName: number | string) =>
+    fetchApi<Deal>(`/deals/${id}/stage`, {
+      method: 'PATCH',
+      body: JSON.stringify(
+        typeof stageIdOrName === 'number'
+          ? { stage_id: stageIdOrName }
+          : { stage_name: stageIdOrName }
+      ),
+    }),
   delete: (id: number) =>
     fetchApi<{ success: boolean }>(`/deals/${id}`, { method: 'DELETE' }),
 };
 
 // ─── Pipeline ─────────────────────────────────────────────────────────────────
 export const pipelineApi = {
-  get: () => fetchApi<PipelineStage[]>('/pipeline'),
+  get: () =>
+    fetchApi<{ pipeline: PipelineStage[]; summary: { total_deals: number; total_value: number } }>('/pipeline')
+      .then(d => d.pipeline),
 };
 
 // ─── Marketing ───────────────────────────────────────────────────────────────

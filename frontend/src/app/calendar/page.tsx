@@ -101,7 +101,9 @@ export default function CalendarPage() {
             }}
             className="glass-panel px-3 py-1.5 rounded-full text-xs font-semibold text-primary hover:bg-white/80 transition-all duration-200 active:scale-95"
           >
-            היום
+            {selectedDay && !(selectedDay === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear())
+              ? `${selectedDay} ${HEBREW_MONTHS[currentMonth]}`
+              : 'היום'}
           </button>
         </div>
       </header>
