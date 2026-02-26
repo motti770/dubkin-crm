@@ -116,43 +116,43 @@ function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
       <GlassDialog open={open} onClose={() => setOpen(false)} title="הוספת עסקה">
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-xs text-white/50">שם עסקה *</label>
+            <label className="text-xs text-slate-500">שם עסקה *</label>
             <input
               value={form.title}
               onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
               placeholder="תיאור העסקה"
-              className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full h-10 rounded-xl bg-white/50 border border-slate-200 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500/50 transition-colors"
             />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="text-xs text-white/50">שלב</label>
+              <label className="text-xs text-slate-500">שלב</label>
               <select
                 value={form.stage}
                 onChange={e => setForm(f => ({ ...f, stage: e.target.value }))}
-                className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+                className="w-full h-10 rounded-xl bg-white/50 border border-slate-200 px-3 text-sm text-slate-900 focus:outline-none focus:border-blue-500/50 transition-colors"
               >
                 {STAGES.map(s => <option key={s} value={s}>{s}</option>)}
               </select>
             </div>
             <div className="space-y-1.5">
-              <label className="text-xs text-white/50">שווי (₪)</label>
+              <label className="text-xs text-slate-500">שווי (₪)</label>
               <input
                 type="number"
                 value={form.value}
                 onChange={e => setForm(f => ({ ...f, value: e.target.value }))}
                 placeholder="0"
                 dir="ltr"
-                className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors"
+                className="w-full h-10 rounded-xl bg-white/50 border border-slate-200 px-3 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500/50 transition-colors"
               />
             </div>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-white/50">איש קשר</label>
+            <label className="text-xs text-slate-500">איש קשר</label>
             <select
               value={form.contact_id}
               onChange={e => setForm(f => ({ ...f, contact_id: e.target.value }))}
-              className="w-full h-10 rounded-xl bg-white/6 border border-white/10 px-3 text-sm text-white focus:outline-none focus:border-blue-500/50 transition-colors"
+              className="w-full h-10 rounded-xl bg-white/50 border border-slate-200 px-3 text-sm text-slate-900 focus:outline-none focus:border-blue-500/50 transition-colors"
             >
               <option value="">ללא איש קשר</option>
               {contacts.map(c => (
@@ -161,20 +161,20 @@ function AddDealDialog({ onSuccess }: { onSuccess: () => void }) {
             </select>
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs text-white/50">הערות</label>
+            <label className="text-xs text-slate-500">הערות</label>
             <textarea
               value={form.notes}
               onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
               placeholder="פרטים נוספים..."
               rows={3}
-              className="w-full rounded-xl bg-white/6 border border-white/10 px-3 py-2 text-sm text-white placeholder:text-white/30 focus:outline-none focus:border-blue-500/50 transition-colors resize-none"
+              className="w-full rounded-xl bg-white/50 border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-500/50 transition-colors resize-none"
             />
           </div>
         </div>
         <div className="flex justify-end gap-2 pt-2">
           <button
             onClick={() => setOpen(false)}
-            className="px-4 py-2 rounded-xl text-sm text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            className="px-4 py-2 rounded-xl text-sm text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
             ביטול
           </button>
